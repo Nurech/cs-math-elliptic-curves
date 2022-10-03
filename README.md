@@ -1,4 +1,12 @@
-# CsMathEllipticCurves
+# ITC8190 Mathematics for Computer Science Personal project application
+
+Based on your application, your task is to implement elliptic curve points over a finite field class. To get maximum points for this task you need:
+Implement point addition operation.
+Implement scalar multiplication for a given point.
+Function that finds order of the elliptic curve group
+Provide a basic documentation for the code or answer my questions about how code works in person.
+
+_________________
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.0.
 
