@@ -1,10 +1,10 @@
 # ITC8190 Mathematics for Computer Science Personal project application
 
 Based on your application, your task is to implement elliptic curve points over a finite field class. To get maximum points for this task you need:
-Implement point addition operation.
-Implement scalar multiplication for a given point.
-Function that finds order of the elliptic curve group
-Provide a basic documentation for the code or answer my questions about how code works in person.
+1. Implement point addition operation.
+2. Implement scalar multiplication for a given point.
+3. Function that finds order of the elliptic curve group
+4. Provide a basic documentation for the code or answer my questions about how code works in person.
 
 _________________
 
