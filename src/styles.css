@@ -1,3 +1,31 @@
 .number-button {
   max-width: 220px;
 }
+
+.function-plot .graph circle {
+  r: 4;
+}
+
+.function-plot .graph path {
+  stroke-width: 1;
+}
+
+path > .y {
+  stroke: #491EC4 !important;
+}
+
+.function-plot  .y.origin {
+  stroke: #491EC4;
+  stroke-width: 1.5;
+  opacity: 1;
+}
+
+.function-plot  .x.origin {
+  stroke: #e5555e;
+  stroke-width: 1.5;
+  opacity: 1;
+}
+
+body {
+  background: #212529;
+}
