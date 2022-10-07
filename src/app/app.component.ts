@@ -1,80 +1,71 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import * as echarts from 'echarts';
-import { EChartsOption } from 'echarts/types/dist/echarts';
+import functionPlot from 'function-plot';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterViewInit{
-  @ViewChild('chart') chart!: ElementRef;
-  chartOption = option;
-  a = -7;
-  b = 10;
+export class AppComponent implements AfterViewInit {
+
+  @ViewChild('container') container!: ElementRef;
+
+  constructor() {
+  }
+
+  content = '$y^{2}=x^{3}+ax+b \\mod{N}$';
+  a = 0;
+  b = 7;
+  N = 34;
+  x1 = 2; // P
+  y1 = 2; // P
+  x2 = 4; // Q
+  y2 = 4; // Q
+
 
   ngAfterViewInit() {
-    this.setOptions();
+    this.build();
   }
 
-  setOptions() {
-    this.chartOption = option;
+  build() {
+    let option = {
+      target: '#graph',
+      width: 450,
+      disableZoom: false,
+      yAxis: {domain: [-10, 10]},
+      xAxis: {domain: [-10, 10]},
+      grid: true,
+      data: [
+        {
+          fn: 'y^2-((x^3)+(' + this.a + 'x)+' + this.b + ')',
+          color: '#e7a649',
+          fnType: 'implicit',
+        },
+        {fn: 'x', color: 'pink'}
+      ]
+    };
+    // @ts-ignore
+    functionPlot(option);
+    console.group("Point addition");
+    console.log('curve: ', JSON.stringify(option.data[0].fn));
+    console.log('line Q-P: ', JSON.stringify(option.data[1].fn));
+    console.groupEnd();
+
   }
+
+  refresh() {
+    this.build();
+  }
+
+  reset() {
+    this.a = 0;
+    this.b = 7;
+    this.N = 34;
+    this.x1 = 2; // P
+    this.y1 = 2; // P
+    this.x2 = 4; // Q
+    this.y2 = 4; // Q
+    this.build();
+  }
+
 }
-
-export const option: EChartsOption = {
-  animation: false,
-  grid: {
-    top: 40,
-    left: 50,
-    right: 40,
-    bottom: 50
-  },
-  xAxis: {
-    name: 'x',
-    minorTick: {
-      show: true
-    },
-    minorSplitLine: {
-      show: true
-    }
-  },
-  yAxis: {
-    name: 'y',
-    min: -100,
-    max: 100,
-    minorTick: {
-      show: true
-    },
-    minorSplitLine: {
-      show: true
-    }
-  },
-  dataZoom: [
-    {
-      show: true,
-      type: 'inside',
-      filterMode: 'none',
-      xAxisIndex: [0],
-      startValue: -10,
-      endValue: 10
-    },
-    {
-      show: true,
-      type: 'inside',
-      filterMode: 'none',
-      yAxisIndex: [0],
-      startValue: -10,
-      endValue: 10
-    }
-  ],
-  series: [
-    {
-      type: 'line',
-      smooth: true,
-      showSymbol: false,
-      clip: true,
-      data: [[-1,-1],[1,1], [1,3]]
-    }
-  ]
-};

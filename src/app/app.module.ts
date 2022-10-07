@@ -10,6 +10,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
+import { MathjaxModule } from 'mathjax-angular';
+import { CardModule } from 'primeng/card';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { InputTextModule } from 'primeng/inputtext';
     NgbModule,
     ButtonModule,
     RippleModule,
-    InputTextModule
+    InputTextModule,
+    MathjaxModule.forRoot(),
+    CardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
