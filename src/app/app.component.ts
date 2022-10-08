@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import functionPlot from 'function-plot';
 import { FunctionPlotOptions } from 'function-plot/dist/types';
 import { MathService } from './math.service';
@@ -18,7 +18,6 @@ export class AppComponent implements AfterViewInit {
   }
 
   // Latex content
-  content = '$y^{2}=x^{3}+ax+b \\mod{N}$';
   a = -7;
   b = 10;
   N = 34;
@@ -29,6 +28,7 @@ export class AppComponent implements AfterViewInit {
   x3 = -3; // R
   y3 = 2; // R
   labels = [];
+  content = `$y^{2}=x^{3}+${this.a}x+${this.b}$`;
 
   ngAfterViewInit() {
     this.build();
@@ -49,7 +49,13 @@ export class AppComponent implements AfterViewInit {
         {points: [[this.x1, this.y1]], color: '#4682b3', fnType: 'points', graphType: 'scatter'},
         {points: [[this.x2, this.y2]], color: '#e5555e', fnType: 'points', graphType: 'scatter'},
         {points: [this.math.fnR(this.x1, this.y1, this.x2, this.y2, this.a)], color: '#22c55e', fnType: 'points', graphType: 'scatter'},
-        {vector: this.math.fnRv(this.x1, this.y1, this.x2, this.y2, this.a), offset: this.math.fnPQi(this.x1, this.y1, this.x2, this.y2, this.a), graphType: 'polyline', fnType: 'vector', color: '#22c55e'}
+        {
+          vector: this.math.fnRv(this.x1, this.y1, this.x2, this.y2, this.a),
+          offset: this.math.fnPQi(this.x1, this.y1, this.x2, this.y2, this.a),
+          graphType: 'polyline',
+          fnType: 'vector',
+          color: '#22c55e'
+        }
       ]
     };
 
@@ -60,17 +66,34 @@ export class AppComponent implements AfterViewInit {
     this.log(option);
   }
 
-  reCalcPQ() {
-    this.y1 = this.math.reCalcPQy(this.a, this.b, this.x1)
-    this.y2 = this.math.reCalcPQy(this.a, this.b, this.x2)
-    // this.x1 = this.math.reCalcPQx(this.a, this.b, this.y1)
-    // this.x2 = this.math.reCalcPQx(this.a, this.b, this.y2)
-  }
-
   // Set the options again for re-build
   refresh() {
-    this.reCalcPQ();
     this.build();
+  }
+
+  reCalcPy() {
+    this.y1 = this.math.reCalcPQy(this.a, this.b, this.x1);
+    this.reCalcPx();
+    this.refresh();
+  }
+
+  reCalcPx() {
+    this.x1 = this.math.reCalcPQx(this.a, this.b, this.x1, null);
+    this.refresh();
+
+  }
+
+  reCalcQy() {
+    this.y2 = this.math.reCalcPQy(this.a, this.b, this.x2);
+    this.refresh();
+
+
+  }
+
+  reCalcQx() {
+    this.x2 = this.math.reCalcPQx(this.a, this.b, null, this.x2);
+    this.refresh();
+
   }
 
   // Just logging to console for debug
@@ -92,8 +115,6 @@ export class AppComponent implements AfterViewInit {
     this.y1 = 2; // P
     this.x2 = 3; // Q
     this.y2 = 4; // Q
-    this.x3 = -3; // R
-    this.y3 = 2; // R
     this.build();
   }
 

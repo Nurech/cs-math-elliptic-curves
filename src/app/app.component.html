@@ -1,3 +1,4 @@
+<p-toast></p-toast>
 <div class="container">
 
   <p-card header="Point addition" subheader="ON THE WEIERSTRASS’ CURVES" [style]="{width: '500px'}"
@@ -38,13 +39,13 @@
           <div id="graph"></div>
           <div class="sub-text">accuracy on graph > .001 </div>
         </div>
-<!--        <div [mathjax]="content"></div>-->
+        <div [mathjax]="content"></div>
       </div>
     </div>
 
     <div>
-      <p-accordion [multiple]="true">
-        <p-accordionTab header="Point 1" [selected]="true">
+<!--      <p-accordion [multiple]="true">-->
+<!--        <p-accordionTab header="Point 1" [selected]="true">-->
 
 
           <p-messages severity="info">
@@ -53,14 +54,13 @@
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">x1</span>
-                  <p-inputNumber [(ngModel)]="x1" (ngModelChange)="refresh()" [showButtons]="true"
-                                 mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="x1" (ngModelChange)="reCalcPy()" [showButtons]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">y1</span>
-                  <p-inputNumber [(ngModel)]="y1" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="y1" (ngModelChange)="reCalcPx()" [showButtons]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
             </ng-template>
@@ -73,14 +73,13 @@
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">x2</span>
-                  <p-inputNumber [(ngModel)]="x2" (ngModelChange)="refresh()" [showButtons]="true"
-                                 mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="x2" (ngModelChange)="reCalcQy()" [showButtons]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">y2</span>
-                  <p-inputNumber [(ngModel)]="y2" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="y2" (ngModelChange)="reCalcQx()" [showButtons]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
             </ng-template>
@@ -94,20 +93,20 @@
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">x3</span>
-                  <p-inputNumber [(ngModel)]="x3" (ngModelChange)="refresh()" [disabled]="true" mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="x3" [disabled]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
               <div class="col px-1">
                 <div class="p-inputgroup">
                   <span class="p-inputgroup-addon">y3</span>
-                  <p-inputNumber [(ngModel)]="y3" (ngModelChange)="refresh()" [disabled]="true" mode="decimal"></p-inputNumber>
+                  <p-inputNumber [(ngModel)]="y3" [disabled]="true" mode="decimal"></p-inputNumber>
                 </div>
               </div>
             </ng-template>
           </p-messages>
 
-        </p-accordionTab>
-      </p-accordion>
+<!--        </p-accordionTab>-->
+<!--      </p-accordion>-->
     </div>
 
     <ng-template pTemplate="footer">

@@ -93,3 +93,7 @@ body {
 .p-message {
   margin: 0.2rem 0;
 }
+
+.p-toast .p-toast-message.p-toast-message-error .p-toast-message-icon, .p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
+  align-self: center;
+}

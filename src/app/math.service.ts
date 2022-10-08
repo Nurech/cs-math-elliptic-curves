@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MathService {
+
+  constructor(private messageService: MessageService) {}
 
   /**
    * How program works:
@@ -131,13 +134,10 @@ export class MathService {
    * Conundrum here is a situation where N^0 should always be 1 but 0^N should always be 0 for N > 0
    */
   fnY(a: number, b: number, x: number): any {
-    // let hasError = this.checkForCaseWhen(a, b, x)
-    // if (hasError) {
-    //   return;
-    // }
+    console.error(a,b,x)
     if (x && a && b) {
       let fnY = Math.sqrt(Math.pow(x, 3) + a * x + b);
-      console.log('fnY: ', fnY);
+      console.error('fnY: ', fnY);
       return fnY;
     }
   }
@@ -150,29 +150,47 @@ export class MathService {
     console.log('recalculating P,Q with reCalcPQy');
     return this.fnY(a, b, x);
   }
-  // reCalcPQx(a: number, b: number, y: number) {
-  //   console.log('recalculating P,Q with reCalcPQy');
-  //   return this.fnY(a, b, y);
-  // }
 
   /**
    * At times, we need to check for special cases,
-   * e.g when user is trying to move P or Q out of bounds (this will result in NaN or infinity)
+   * e.g. when user is trying to move P or Q out of bounds (this will result in NaN or infinity)
    * So we don't allow that to happen
    */
-  checkForCaseWhen(a: number, b: number, x: number) {
-    if (x >= a) {
-      x = a-1;
-      console.error('error x >= a')
-      return false;
+  reCalcPQx(a: number, b: number, x1: any, x2: any) {
+    let xMin = this.xMin(a, b);
+    if (x1 !== null && xMin - x1 > 0) {
+      console.error('Px to small it cant go out of bounds ', xMin - x1);
+      this.showError('Px to small it cant go out of bounds');
+      return xMin;
     }
-    return true;
+
+    if (x2 !== null && xMin - x2 > 0) {
+      console.error('Qx to small it cant go out of bounds ', xMin - x2);
+      this.showError('Qx to small it cant go out of bounds');
+      return xMin;
+    }
+
+    // All good
+    if (x1 !== null) {
+      return x1; // TODO
+    } else {
+      return x2; // TODO
+    }
   }
 
   /**
-   * Curve left side x
+   * Curve left side x min (this is the point we can't let Q or P over, or it will go outside of domain
+   * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh
    */
-  xMin() {
-    // let min = sqrt(x^3+-7x+10)
+  xMin(a: number, b: number) {
+    let s = Math.sqrt(12 * a * a * a + 81 * b * b);
+    let s2 = s - 9 * b;
+    let xMin = Math.cbrt(s2 / 18) - Math.cbrt(2 / 3 / s2) * a;
+    console.log('xMin is: ', xMin);
+    return xMin;
+  }
+
+  showError(message: string) {
+    this.messageService.add({severity: 'error', summary: 'Error', detail: message + ' What are you doing!?', sticky: false, life: 2000});
   }
 }
