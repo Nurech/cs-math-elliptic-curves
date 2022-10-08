@@ -63,6 +63,8 @@ export class AppComponent implements AfterViewInit {
   reCalcPQ() {
     this.y1 = this.math.reCalcPQy(this.a, this.b, this.x1)
     this.y2 = this.math.reCalcPQy(this.a, this.b, this.x2)
+    // this.x1 = this.math.reCalcPQx(this.a, this.b, this.y1)
+    // this.x2 = this.math.reCalcPQx(this.a, this.b, this.y2)
   }
 
   // Set the options again for re-build

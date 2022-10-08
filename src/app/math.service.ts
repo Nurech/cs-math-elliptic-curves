@@ -18,10 +18,10 @@ export class MathService {
    * rest of the code is just semantics and UI stuff.
    *
    * UI controls should be intuitive, follow color coding for lines.
-   * Graph can drag and zoomed. Hovering over functions shows cords.
+   * Graph can be dragged and zoomed. Hovering over functions shows cords.
    *
-   * Element(UI input) ─── functionPlot(Fn)
-   *              └─────────────┴─── variables <───> math.service.ts
+   * Flow: Element(UI input) <───> functionPlot(Fn)
+   *               └───────────────────┴─── variables <───> math.service.ts
    *
    * How math service works:
    *
@@ -32,16 +32,16 @@ export class MathService {
    * Notes:
    *
    * Due to limitations of calculating from geometric method to algebraic method
-   * Accuracy on chart is around ~ < .0001 (computational and performance wise not lower decimal points may be rounded)
-   *
-   * You may notice line thickening on graph that happens due to inaccuracy
-   * in rendering with plotter e.g fn: 'y^2-((x^3)+(-7x)+7)' (but it's only visual glitch).
+   * Accuracy on chart is around ~ > .0001
+   * Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
+   * Hence, you may notice line thickening on graph that happens due to inaccuracy.
    * https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
    *
    * Plotter - https://mauriciopoppe.github.io/function-plot/
    * Source - https://medium.com/understanding-ecc/understanding-the-ellyptic-curve-cryptography-d91c11e4e331
    * Source - https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4697&context=theses
    * Source - https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/
+   * Funny - https://eprint.iacr.org/2013/635.pdf
    */
 
   /**
@@ -67,7 +67,7 @@ export class MathService {
    */
   fnPQi(x1: number, y1: number, x2: number, y2: number, a: number): number[] {
     if (x1 === x2 && y1 === y2) {
-      return this.fnR0(x1, y1, x2, y2, a);
+      return this.fnR0(x1, y1, x2, a);
     } else {
       let m = (y2 - y1) / (x2 - x1);
       let x3 = m * m - x1 - x2;
@@ -90,6 +90,7 @@ export class MathService {
   }
 
   /**
+   * This is the same as above but for plotter only
    * For drawing the vector (line) from PQi -> R. PQi is basically R-
    * Because plotter is using offset to draw vector we leave x = 0, and do * -2 for the y.
    */
@@ -101,17 +102,17 @@ export class MathService {
   }
 
   /**
-   * Special case when P equals Q, P = Q
+   * Special case when P = Q. One might assume infinity but noooo......
    * Equation for R will be same, but we need to find slope m differently
    * R = 3 * x1² + a / 2 * y1
    */
-  fnR0(x1: number, y1: number, x2: number, y2: number, a: number) {
+  fnR0(x1: number, y1: number, x2: number, a: number) {
     let m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
     let x3 = m * m - x1 - x2;
     let y3 = y1 + m * (x3 - x1);
-    let fnRspecial = [x3, y3];
-    console.warn('fnRspecial: ', fnRspecial);
-    return fnRspecial;
+    let fnR0 = [x3, y3];
+    console.log('fnR0: ', fnR0);
+    return fnR0;
   }
 
   /**
@@ -121,15 +122,23 @@ export class MathService {
    * For graph we just input the function, for fnY we calculate y
    */
   fnCurve(a: number, b: number): any {
+    console.log('fnCurve is asked by plotter');
     return 'sqrt(x^3+' + a + 'x+' + b + ')';
   }
 
   /**
    * Solve curve for fnY we calculate y directly (same as above fnCurve) but we input x for y
+   * Conundrum here is a situation where N^0 should always be 1 but 0^N should always be 0 for N > 0
    */
   fnY(a: number, b: number, x: number): any {
+    // let hasError = this.checkForCaseWhen(a, b, x)
+    // if (hasError) {
+    //   return;
+    // }
     if (x && a && b) {
-      return Math.sqrt(Math.pow(x, 3) + a * x + b); // return calculated y
+      let fnY = Math.sqrt(Math.pow(x, 3) + a * x + b);
+      console.log('fnY: ', fnY);
+      return fnY;
     }
   }
 
@@ -137,7 +146,33 @@ export class MathService {
    * On increment to P(x,y) or Q(x,y) we re-calculate cords so that points always stay on curve
    * This is for UX mostly but makes sense to do it...
    */
-  reCalcPQy(a: number, b: number, x: number, ) {
+  reCalcPQy(a: number, b: number, x: number) {
+    console.log('recalculating P,Q with reCalcPQy');
     return this.fnY(a, b, x);
+  }
+  // reCalcPQx(a: number, b: number, y: number) {
+  //   console.log('recalculating P,Q with reCalcPQy');
+  //   return this.fnY(a, b, y);
+  // }
+
+  /**
+   * At times, we need to check for special cases,
+   * e.g when user is trying to move P or Q out of bounds (this will result in NaN or infinity)
+   * So we don't allow that to happen
+   */
+  checkForCaseWhen(a: number, b: number, x: number) {
+    if (x >= a) {
+      x = a-1;
+      console.error('error x >= a')
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Curve left side x
+   */
+  xMin() {
+    // let min = sqrt(x^3+-7x+10)
   }
 }
