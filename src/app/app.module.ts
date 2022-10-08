@@ -12,6 +12,10 @@ import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
 import { MathjaxModule } from 'mathjax-angular';
 import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
+import { MessagesModule } from 'primeng/messages';
+import { AccordionModule } from 'primeng/accordion';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -30,7 +34,11 @@ import { CardModule } from 'primeng/card';
     RippleModule,
     InputTextModule,
     MathjaxModule.forRoot(),
-    CardModule
+    CardModule,
+    MessageModule,
+    MessagesModule,
+    AccordionModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

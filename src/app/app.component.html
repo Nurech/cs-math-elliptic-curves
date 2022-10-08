@@ -4,76 +4,116 @@
           class="p-card-shadow p-3">
     <ng-template pTemplate="header">
       <div class="d-flex justify-content-center flex-column">
-      <img alt="Card" src="assets/pointadd2.png" class="p-3 w-75 align-self-center">
-      <span style="font-size: 8px" class="d-flex justify-content-center">Image: <a
-        href="https://www.youtube.com/watch?v=Vrx7SNnYHfI">https://www.youtube
+        <img alt="Card" src="assets/pointadd2.png" class="p-3 w-75 align-self-center">
+        <span style="font-size: 8px" class="d-flex justify-content-center"><a
+          href="https://www.youtube.com/watch?v=Vrx7SNnYHfI">https://www.youtube
         .com/watch?v=Vrx7SNnYHfI</a></span>
-</div>
+      </div>
     </ng-template>
-    <div class="row p-2">
-      <div class="col">
-        <div class="p-inputgroup">
-          <button type="button" pButton pRipple icon="pi pi-minus" class="p-button-danger"
-                  (click)="a = a-1; refresh()"></button>
-          <span class="p-inputgroup-addon">a</span>
-          <p-inputNumber inputId="integeronly" [(ngModel)]="a"></p-inputNumber>
-          <button type="button" pButton pRipple icon="pi pi-plus" class="p-button-success"
-                  (click)="a = a+1; refresh()"></button>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-inputgroup">
-          <button type="button" pButton pRipple icon="pi pi-minus" class="p-button-danger"
-                  (click)="b = b-1; refresh()"></button>
-          <span class="p-inputgroup-addon">b</span>
-          <p-inputNumber inputId="integeronly" [(ngModel)]="b"></p-inputNumber>
-          <button type="button" pButton pRipple icon="pi pi-plus" class="p-button-success"
-                  (click)="b = b+1; refresh()"></button>
-        </div>
-      </div>
+    <div class="row">
+
+      <p-messages severity="warn">
+        <ng-template pTemplate>
+          <span class="custom-message">Curve</span>
+          <div class="col px-1">
+            <div class="p-inputgroup">
+              <span class="p-inputgroup-addon">a</span>
+              <p-inputNumber [(ngModel)]="a" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+            </div>
+          </div>
+          <div class="col px-1">
+            <div class="p-inputgroup">
+              <span class="p-inputgroup-addon">b</span>
+              <p-inputNumber [(ngModel)]="b" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+            </div>
+          </div>
+        </ng-template>
+      </p-messages>
+
+
     </div>
     <div class="row">
       <div class="col d-flex justify-content-center flex-column">
-        <div #container>
+        <div #container *ngIf="show">
           <div id="graph"></div>
+          <div class="sub-text">accuracy on graph > .001 </div>
         </div>
-        <div [mathjax]="content"></div>
+<!--        <div [mathjax]="content"></div>-->
       </div>
     </div>
 
+    <div>
+      <p-accordion [multiple]="true">
+        <p-accordionTab header="Point 1" [selected]="true">
+
+
+          <p-messages severity="info">
+            <ng-template pTemplate>
+              <span class="custom-message">P</span>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">x1</span>
+                  <p-inputNumber [(ngModel)]="x1" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">y1</span>
+                  <p-inputNumber [(ngModel)]="y1" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+            </ng-template>
+          </p-messages>
+
+
+          <p-messages severity="red">
+            <ng-template pTemplate>
+              <span class="custom-message">Q</span>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">x2</span>
+                  <p-inputNumber [(ngModel)]="x2" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">y2</span>
+                  <p-inputNumber [(ngModel)]="y2" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+            </ng-template>
+          </p-messages>
+
+
+
+          <p-messages severity="error">
+            <ng-template pTemplate>
+              <span class="custom-message">R</span>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">x3</span>
+                  <p-inputNumber [(ngModel)]="x3" (ngModelChange)="refresh()" [disabled]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+              <div class="col px-1">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">y3</span>
+                  <p-inputNumber [(ngModel)]="y3" (ngModelChange)="refresh()" [disabled]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+            </ng-template>
+          </p-messages>
+
+        </p-accordionTab>
+      </p-accordion>
+    </div>
+
     <ng-template pTemplate="footer">
-
-
       <div class="row p-2">
         <p-button label="Reset" icon="pi pi-times" styleClass="p-button-secondary" (click)="reset()"></p-button>
-
       </div>
     </ng-template>
   </p-card>
 
-
-  <div class="row">
-    <div class="p-col-12 p-md-4">
-
-    </div>
-    <div class="p-col-12 p-md-4">
-
-    </div>
-    <div class="p-col-12 p-md-4">
-      <div class="p-inputgroup">
-        <button type="button" pButton pRipple icon="pi pi-minus" class="p-button-danger"
-                (click)="N = N-1; refresh()"></button>
-        <span class="p-inputgroup-addon">N</span>
-        <p-inputNumber inputId="integeronly" [(ngModel)]="N"></p-inputNumber>
-        <button type="button" pButton pRipple icon="pi pi-plus" class="p-button-success"
-                (click)="N = N+1; refresh()"></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="row d-flex align-items-center justify-content-center">
-
-
-  </div>
 </div>
 

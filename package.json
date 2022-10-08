@@ -30,6 +30,7 @@
     "mathjax-angular": "^2.1.1",
     "mathjs": "^11.2.1",
     "ngx-echarts": "^14.0.0",
+    "primeflex": "^3.2.1",
     "primeicons": "^6.0.1",
     "primeng": "^14.1.2",
     "rxjs": "~7.5.0",

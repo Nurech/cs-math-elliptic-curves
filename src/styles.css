@@ -14,18 +14,82 @@ path > .y {
   stroke: #491EC4 !important;
 }
 
-.function-plot  .y.origin {
+.function-plot .y.origin {
   stroke: #491EC4;
-  stroke-width: 1.5;
+  stroke-width: 1;
   opacity: 1;
 }
 
-.function-plot  .x.origin {
+.function-plot .x.origin {
   stroke: #e5555e;
-  stroke-width: 1.5;
+  stroke-width: 1;
   opacity: 1;
+}
+
+.sub-text {
+  opacity: 0.5;
+  font-size: 8px;
+  text-align: end;
+  padding: 0 28px 10px 0;
 }
 
 body {
   background: #212529;
+}
+
+.p-message.p-message-warn {
+  background: rgb(204, 137, 37, 0.3);
+  border: solid rgb(204, 137, 37);
+  border-width: 0 0 0 6px;
+  color: rgb(204, 137, 37);
+}
+
+.p-message.p-message-info {
+  background: rgba(70, 130, 180, 0.3);
+  border: solid rgba(70, 130, 180);
+  border-width: 0 0 0 6px;
+  color: rgba(70, 130, 180);
+}
+
+.p-message.p-message-red {
+  background: rgba(229, 85, 94, 0.3);
+  border: solid rgba(229, 85, 94);
+  border-width: 0 0 0 6px;
+  color: rgba(229, 85, 94);
+}
+
+.p-message.p-message-error {
+  background: rgb(34, 197, 94, 0.3);
+  border: solid rgb(34, 197, 94);
+  border-width: 0 0 0 6px;
+  color: rgb(34, 197, 94);
+}
+
+.p-inputgroup-addon:last-child, .p-inputgroup button:last-child, .p-inputgroup input:last-child, .p-inputgroup > .p-inputwrapper:last-child > .p-component, .p-inputgroup > .p-inputwrapper:last-child > .p-component > .p-inputtext {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-down {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 6px;
+  padding: 0;
+}
+
+.p-message .p-message-wrapper {
+  padding: 1.25rem 0.75rem;
+}
+
+.p-accordion .p-accordion-content {
+  padding: 0.25rem;
+}
+
+.p-accordion .p-accordion-header .p-accordion-header-link {
+  padding: 0.5rem;
+}
+
+.p-message {
+  margin: 0.2rem 0;
 }

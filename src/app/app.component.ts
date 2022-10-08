@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import functionPlot from 'function-plot';
 import { FunctionPlotOptions } from 'function-plot/dist/types';
 import { MathService } from './math.service';
@@ -11,20 +11,24 @@ import { MathService } from './math.service';
 export class AppComponent implements AfterViewInit {
 
   @ViewChild('container') container!: ElementRef;
-  private instance: any;
+
+  show = true;
 
   constructor(private math: MathService) {
   }
 
+  // Latex content
   content = '$y^{2}=x^{3}+ax+b \\mod{N}$';
-  a = 0;
-  b = 7;
+  a = -7;
+  b = 10;
   N = 34;
-  x1 = -1.39389; // P
-  y1 = 2.07166; // P
-  x2 = 2.08008; // Q
+  x1 = 1; // P
+  y1 = 2; // P
+  x2 = 3; // Q
   y2 = 4; // Q
-
+  x3 = -3; // R
+  y3 = 2; // R
+  labels = [];
 
   ngAfterViewInit() {
     this.build();
@@ -39,17 +43,35 @@ export class AppComponent implements AfterViewInit {
       xAxis: {domain: [-10, 10]},
       grid: true,
       data: [
-        {fn: this.math.fnPQ(this.x1, this.y1, this.x2, this.y2), fnType: 'linear'},
         {fn: '-' + this.math.fnCurve(this.a, this.b), color: '#e7a649'},
         {fn: this.math.fnCurve(this.a, this.b), color: '#e7a649'},
-        {points: [[1, 1], [2, 1]], color: '#5a528d', fnType: 'points', graphType: 'scatter'}
+        {fn: this.math.fnPQ(this.x1, this.y1, this.x2, this.y2, this.a), fnType: 'linear', color: '#4682b4'},
+        {points: [[this.x1, this.y1]], color: '#4682b3', fnType: 'points', graphType: 'scatter'},
+        {points: [[this.x2, this.y2]], color: '#e5555e', fnType: 'points', graphType: 'scatter'},
+        {points: [this.math.fnR(this.x1, this.y1, this.x2, this.y2, this.a)], color: '#22c55e', fnType: 'points', graphType: 'scatter'},
+        {vector: this.math.fnRv(this.x1, this.y1, this.x2, this.y2, this.a), offset: this.math.fnPQi(this.x1, this.y1, this.x2, this.y2, this.a), graphType: 'polyline', fnType: 'vector', color: '#22c55e'}
       ]
     };
-    this.instance = functionPlot(option);
-    console.log(this.instance);
+
+    this.x3 = this.math.fnR(this.x1, this.y1, this.x2, this.y2, this.a)[0];
+    this.y3 = this.math.fnR(this.x1, this.y1, this.x2, this.y2, this.a)[1];
+
+    functionPlot(option);
     this.log(option);
   }
 
+  /**
+   * On increment Py we re-calculate Px as well such that P always stays on curve
+   * For better UX
+   */
+  findPQ() {
+
+  }
+
+  // Set the options again for re-build
+  refresh() {
+    this.build();
+  }
 
   // Just logging to console for debug
   log(option: FunctionPlotOptions) {
@@ -61,19 +83,17 @@ export class AppComponent implements AfterViewInit {
     console.groupEnd();
   }
 
-  refresh() {
-    this.build();
-  }
-
-  // Reset to defaults
+// Reset to defaults
   reset() {
-    this.a = 0;
-    this.b = 7;
+    this.a = -7;
+    this.b = 10;
     this.N = 34;
-    this.x1 = 2; // P
+    this.x1 = 1; // P
     this.y1 = 2; // P
-    this.x2 = 4; // Q
+    this.x2 = 3; // Q
     this.y2 = 4; // Q
+    this.x3 = -3; // R
+    this.y3 = 2; // R
     this.build();
   }
 
