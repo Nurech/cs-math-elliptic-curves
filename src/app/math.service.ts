@@ -51,6 +51,9 @@ export class MathService {
    */
   fnPQ(x1: number, y1: number, x2: number, y2: number, a: number) {
     let m = (y2 - y1) / (x2 - x1);
+    if (x1 === x2 && y1 === y2) {
+      m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
+    }
     let b = y1 - (m * x1);
     let fnPQ = m + '*x + ' + b;
     console.log('fnPQ: ', fnPQ);
@@ -92,7 +95,7 @@ export class MathService {
    */
   fnRv(x1: number, y1: number, x2: number, y2: number, a: number) {
     let fnPQi = this.fnPQi(x1, y1, x2, y2, a);
-    let fnRv = [0, fnPQi[1]*-2];
+    let fnRv = [0, fnPQi[1] * -2];
     console.log('fnRv: ', fnRv);
     return fnRv;
   }
@@ -115,10 +118,26 @@ export class MathService {
    * Weierstrass curve y²=x³+ax+b
    * To get rid of pow on y² we sqrt right side
    * functionPlot has trouble using implicit functions, so we simplify
+   * For graph we just input the function, for fnY we calculate y
    */
-  fnCurve(a: number, b: number) {
+  fnCurve(a: number, b: number): any {
     return 'sqrt(x^3+' + a + 'x+' + b + ')';
   }
 
+  /**
+   * Solve curve for fnY we calculate y directly (same as above fnCurve) but we input x for y
+   */
+  fnY(a: number, b: number, x: number): any {
+    if (x && a && b) {
+      return Math.sqrt(Math.pow(x, 3) + a * x + b); // return calculated y
+    }
+  }
 
+  /**
+   * On increment to P(x,y) or Q(x,y) we re-calculate cords so that points always stay on curve
+   * This is for UX mostly but makes sense to do it...
+   */
+  reCalcPQy(a: number, b: number, x: number, ) {
+    return this.fnY(a, b, x);
+  }
 }

@@ -60,16 +60,14 @@ export class AppComponent implements AfterViewInit {
     this.log(option);
   }
 
-  /**
-   * On increment Py we re-calculate Px as well such that P always stays on curve
-   * For better UX
-   */
-  findPQ() {
-
+  reCalcPQ() {
+    this.y1 = this.math.reCalcPQy(this.a, this.b, this.x1)
+    this.y2 = this.math.reCalcPQy(this.a, this.b, this.x2)
   }
 
   // Set the options again for re-build
   refresh() {
+    this.reCalcPQ();
     this.build();
   }
 
