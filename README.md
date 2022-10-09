@@ -7,51 +7,55 @@ Based on your application, your task is to implement elliptic curve points over 
 4. Provide a basic documentation for the code or answer my questions about how code works in person.
 
 
+## How program works:
+
+When user loads the program 3 graphs are generated with (function plotter) which
+have starting functions with initial values. When new elements are added to graph,
+element (containing function) is started with random values. Function parameters are configurable
+via UI which change variables that turn to math service for computation.
+
+Program code is designed to be slightly "dumb" - to not use overly clever
+syntax and keep code flow readable. Interesting part happens in math.service.ts,
+rest of the code is just semantics and UI stuff.
+
+UI controls should be intuitive, follow color coding for lines.
+Graph can be dragged and zoomed. Hovering over functions shows cords.
 ```
-  How program works:
-  
-  When user loads the program 3 graphs are generated with (function plotter) which
-  have starting functions with initial values. When new elements are added to graph,
-  element (containing function) is started with random values. Function parameters are configurable
-  via UI which change variables that turn to math service for computation.
-  
-  Program code is designed to be slightly "dumb" - to not use overly clever
-  syntax and keep code flow readable. Interesting part happens in math.service.ts,
-  rest of the code is just semantics and UI stuff.
-  
-  UI controls should be intuitive, follow color coding for lines.
-  Graph can be dragged and zoomed. Hovering over functions shows cords.
-  
   Flow: Element(UI input) <───> functionPlot(Fn)
                 └───────────────────┴─── variables <───> math.service.ts
-  
-  How math service works:
-  
-  Each element on a graph is a function (solving for y or cords etc.).
-  Graph functions (lines, curves, points) ask computation from match service.
-  Calculation is relative, meaning change to P->Q will reflect on R.
-  Some edge cases are covered (stopping user going out of bounds for x, when Q=P etc.)
-  Calculations are here: https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/math.service.ts
-  
-  Notes:
-  
-  Due to limitations of calculating from geometric method to algebraic method
-  Accuracy on chart is around ~ > .0001
-  Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
-  Hence, you may notice line thickening on graph that happens due to inaccuracy.
-  Meaning R on the plotter is on Curve with 99.9999% accuracy (or better).
-  https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
-  
-  Plotter - https://mauriciopoppe.github.io/function-plot/
-  Source - https://medium.com/understanding-ecc/understanding-the-ellyptic-curve-cryptography-d91c11e4e331
-  Source - https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4697&context=theses
-  Source - https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/
-  Funny - https://eprint.iacr.org/2013/635.pdf
-  
-  Cool implementation of custom method logger using decorator @Log()
-  https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/decorators/logger.ts
-  
 ```
+## How math service works:
+
+Each element on a graph is a function (solving for y or cords etc.).
+Graph functions (lines, curves, points) ask computation from match service.
+Calculation is relative, meaning change to P->Q will reflect on R.
+Some edge cases are covered (stopping user going out of bounds for x, when Q=P etc.)
+Calculations are here: 
+* https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/math.service.ts
+
+## Notes:
+
+Due to limitations of calculating from geometric method to algebraic method
+Accuracy on chart is around ~ > .0001
+Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
+Hence, you may notice line thickening on graph that happens due to inaccuracy.
+Meaning R on the plotter is on Curve with 99.9999% accuracy (or better).
+* https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
+
+
+Cool implementation of custom method logger using decorator @Log()
+* https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/decorators/logger.ts
+
+## Sources:
+
+* Plotter - https://mauriciopoppe.github.io/function-plot/
+* Source - https://medium.com/understanding-ecc/understanding-the-ellyptic-curve-cryptography-d91c11e4e331
+* Source - https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4697&context=theses
+* Source - https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/
+* Funny - https://eprint.iacr.org/2013/635.pdf
+
+
+
 
 ### press F12 to inspect logging
 ```javascript
