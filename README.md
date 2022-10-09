@@ -13,9 +13,8 @@ https://cs-math-elliptic-curve-points.web.app
 ## How program works:
 
 When user loads the program 3 graphs are generated with (function plotter) which
-have starting functions with initial values. When new elements are added to graph,
-element (containing function) is started with random values. Function parameters are configurable
-via UI which change variables that turn to math service for computation.
+have starting functions with initial values. Function parameters are configurable
+via UI which change variables that turn to math service for computation. Variables can be copied to allow sharing of settings.
 
 Program code is designed to be slightly "dumb" - to not use overly clever
 syntax and keep code flow readable. Interesting part happens in math.service.ts,
@@ -23,6 +22,10 @@ rest of the code is just semantics and UI stuff.
 
 UI controls should be intuitive, follow color coding for lines.
 Graph can be dragged and zoomed. Hovering over functions shows cords.
+
+Error level messages indicates errors that should not happen.
+Warning levels indicate something went wrong, but was corrected for the user.
+Information level messages are just informative that something special happened in background.
 ```
   Flow: Element(UI input) <───> functionPlot(Fn)
                 └───────────────────┴─── variables <───> math.service.ts
@@ -32,7 +35,7 @@ Graph can be dragged and zoomed. Hovering over functions shows cords.
 Each element on a graph is a function (solving for y or cords etc.).
 Graph functions (lines, curves, points) ask computation from match service.
 Calculation is relative, meaning change to P->Q will reflect on R.
-Some edge cases are covered (stopping user going out of bounds for x, when Q=P etc.)
+Some edge cases are covered (stopping user going out of bounds for x, when Q=P, selecting closest x root etc.)
 Calculations are here: 
 * https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/math.service.ts
 

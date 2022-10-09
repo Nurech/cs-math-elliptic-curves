@@ -114,14 +114,14 @@ export class MathService {
     //TODO solve Infinty somewhere (when y1 === y2)
     let xMin = this.fnX0(a, b);
     if (x1 !== null && xMin - x1 >= 0) {
-      console.error('Px too small it cant go out of bounds ', xMin - x1);
-      this.showError('Px too small! rounding to root...');
+      console.warn('Px too small it cant go out of bounds ', xMin - x1);
+      this.showWarn('Px too small! rounding to root...');
       return this.fnX(a, b, y1, x1);
     }
 
     if (x2 !== null && xMin - x2 >= 0) {
-      console.error('Qx too small it cant go out of bounds ', xMin - x2);
-      this.showError('Qx too small! rounding to root...');
+      console.warn('Qx too small it cant go out of bounds ', xMin - x2);
+      this.showWarn('Qx too small! rounding to root...');
       return this.fnX(a, b, y2, x2);
     }
 
@@ -191,6 +191,7 @@ export class MathService {
         2 * Math.cbrt(b),
         Math.cbrt(-b)
       ];
+      console.error('x has two roots!?',roots)
       this.showError('x has two roots!?');
     }
     return roots;
@@ -227,5 +228,9 @@ export class MathService {
 
   showInfo(message: string) {
     this.messageService.add({severity: 'info', summary: 'Info', detail: message, sticky: false, life: 4000});
+  }
+
+  showWarn(message: string) {
+    this.messageService.add({severity: 'warn', summary: 'Warning', detail: message, sticky: false, life: 4000});
   }
 }

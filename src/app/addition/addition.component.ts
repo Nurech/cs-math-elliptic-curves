@@ -98,6 +98,7 @@ export class AdditionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   reCalcPy() {
     this.add.y1 = this.math.reCalcPQy(this.add.a, this.add.b, this.add.x1);
+    this.reCalcPx(); // check x bounds basically
     this.build();
   }
 
@@ -108,6 +109,7 @@ export class AdditionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   reCalcQy() {
     this.add.y2 = this.math.reCalcPQy(this.add.a, this.add.b, this.add.x2);
+    this.reCalcPx(); // check x bounds basically
     this.build();
   }
 
