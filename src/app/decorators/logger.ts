@@ -22,6 +22,8 @@ export function Log(params?: LoggerParams): (target: any, propertyKey: string, d
     let functionString = descriptor.value.toString();
     let variableNames = functionString.match('\\((.*?)\\)')[0].replace('(', '').replace(')', '').replace(' ', '').split(',');
 
+    // return;
+
     descriptor.value = function (...args: any[]) {
 
       let values: any[] = args.toString().replace(' ', '').split(',');

@@ -10,47 +10,6 @@ export class MathService {
   constructor(private messageService: MessageService) {}
 
   /**
-   * How program works:
-   *
-   * When user loads the program 3 graphs are generated with (function plotter) which
-   * have starting functions with initial values. When new elements are added to graph,
-   * element (containing function) is started with random values. Function parameters are configurable
-   * via UI which change variables that turn to math service for computation.
-   *
-   * Program code is designed to be slightly "dumb" - to not use overly clever
-   * syntax and keep code flow readable. Interesting part happens in math.service.ts,
-   * rest of the code is just semantics and UI stuff.
-   *
-   * UI controls should be intuitive, follow color coding for lines.
-   * Graph can be dragged and zoomed. Hovering over functions shows cords.
-   *
-   * Flow: Element(UI input) <───> functionPlot(Fn)
-   *               └───────────────────┴─── variables <───> math.service.ts
-   *
-   * How math service works:
-   *
-   * Each element on a graph is a function (solving for y or cords etc.).
-   * Graph functions (lines, curves, points) ask computation from match service.
-   * Calculation is relative, meaning change to P->Q will reflect on R.
-   * Some edge cases are covered (stopping user going out of bounds for x, when Q=P etc.)
-   *
-   * Notes:
-   *
-   * Due to limitations of calculating from geometric method to algebraic method
-   * Accuracy on chart is around ~ > .0001
-   * Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
-   * Hence, you may notice line thickening on graph that happens due to inaccuracy.
-   * Meaning R on the plotter is on Curve with 99.9999% accuracy (or better).
-   * https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
-   *
-   * Plotter - https://mauriciopoppe.github.io/function-plot/
-   * Source - https://medium.com/understanding-ecc/understanding-the-ellyptic-curve-cryptography-d91c11e4e331
-   * Source - https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4697&context=theses
-   * Source - https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/
-   * Funny - https://eprint.iacr.org/2013/635.pdf
-   */
-
-  /**
    * Straight line function for P -> Q
    * Find the slope m (y1 - y2) / (x1 - x2)
    * Simplify to slope-intercept y = mx + b
@@ -67,8 +26,8 @@ export class MathService {
 
   /**
    * fnPQi is where P and Q intersect the curve
-   * Find R from P -> Q on the curve, addition law
-   * P=(x1,y1), Q=(x1,y2), R=(x3,y3)
+   * Find R- from P -> Q on the curve, addition law
+   * P=(x1,y1), Q=(x1,y2), R-=(x3,y3)
    */
   @Log()
   fnPQi(x1: number, y1: number, x2: number, y2: number, a: number): number[] {
@@ -141,7 +100,7 @@ export class MathService {
    * This is for UX mostly but makes sense to do it...
    */
   @Log()
-  reCalcPQy(a: number, b: number, x: number) {
+  reCalcPQy(a: number, b: number, x: number,) {
     return this.fnY(a, b, x);
   }
 
@@ -151,26 +110,36 @@ export class MathService {
    * So we don't allow that to happen
    */
   @Log()
-  reCalcPQx(a: number, b: number, x1: any, x2: any) {
+  reCalcPQx(a: number, b: number, x1: any, x2: any, y1: any , y2: any) {
     let xMin = this.xMin(a, b);
     if (x1 !== null && xMin - x1 >= 0) {
-      console.error('Px to small it cant go out of bounds ', xMin - x1);
-      this.showError('Px to small it cant go out of bounds');
+      console.error('Px too small it cant go out of bounds ', xMin - x1);
+      this.showError('Px too small!');
       return xMin;
     }
 
     if (x2 !== null && xMin - x2 >= 0) {
-      console.error('Qx to small it cant go out of bounds ', xMin - x2);
-      this.showError('Qx to small it cant go out of bounds');
+      console.error('Qx too small it cant go out of bounds ', xMin - x2);
+      this.showError('Qx too small!');
       return xMin;
     }
 
     // All good
     if (x1 !== null) {
-      return x1; // TODO
+      // return this.fnX(a,b,x1); // TODO
+      return x1;
     } else {
-      return x2; // TODO
+      // return this.fnX(a,b,x2); // TODO
+      return x2;
     }
+  }
+
+  /**
+   * Calc for x cubic. We need to re-calculate x when user is moving y-cord where curve is y²=x³+ax+b
+   * Factor out x and then use the classic x * ( ax^2+bx+c / 2a )
+   */
+  fnX(a: number, b: number, x: number) {
+    return Math.pow(x, 3)+a*x+b / this.fnY(a,b,x);
   }
 
   /**
@@ -192,6 +161,10 @@ export class MathService {
   }
 
   showError(message: string) {
-    this.messageService.add({severity: 'error', summary: 'Error', detail: message + ' What are you doing?', sticky: false, life: 4000});
+    this.messageService.add({severity: 'error', summary: 'Error', detail: message, sticky: false, life: 4000});
+  }
+
+  showInfo(message: string) {
+    this.messageService.add({severity: 'info', summary: 'Info', detail: message, sticky: false, life: 4000});
   }
 }

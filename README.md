@@ -6,6 +6,9 @@ Based on your application, your task is to implement elliptic curve points over 
 3. Function that finds order of the elliptic curve group
 4. Provide a basic documentation for the code or answer my questions about how code works in person.
 
+## Live site
+
+https://cs-math-elliptic-curve-points.web.app
 
 ## How program works:
 
@@ -40,7 +43,6 @@ Accuracy on chart is around ~ > .0001
 Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
 Hence, you may notice line thickening on graph that happens due to inaccuracy.
 Meaning R on the plotter is on Curve with 99.9999% accuracy (or better).
-* https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
 
 
 Cool implementation of custom method logger using decorator @Log()

@@ -41,13 +41,13 @@
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">a</span>
-              <p-inputNumber [(ngModel)]="a" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.a" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">b</span>
-              <p-inputNumber [(ngModel)]="b" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.b" (ngModelChange)="refresh()" [showButtons]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
         </ng-template>
@@ -59,13 +59,14 @@
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">x1</span>
-              <p-inputNumber [(ngModel)]="x1" (ngModelChange)="reCalcPy()" [min]="xMin" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.x1" (ngModelChange)="reCalcPy()" [min]="xMin" [showButtons]="true"
+                             mode="decimal"></p-inputNumber>
             </div>
           </div>
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">y1</span>
-              <p-inputNumber [(ngModel)]="y1" (ngModelChange)="reCalcPx()" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.y1" (ngModelChange)="reCalcPx()" [showButtons]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
         </ng-template>
@@ -78,13 +79,14 @@
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">x2</span>
-              <p-inputNumber [(ngModel)]="x2" (ngModelChange)="reCalcQy()" [min]="xMin" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.x2" (ngModelChange)="reCalcQy()" [min]="xMin" [showButtons]="true"
+                             mode="decimal"></p-inputNumber>
             </div>
           </div>
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">y2</span>
-              <p-inputNumber [(ngModel)]="y2" (ngModelChange)="reCalcQx()" [showButtons]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.y2" (ngModelChange)="reCalcQx()" [showButtons]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
         </ng-template>
@@ -98,13 +100,13 @@
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">x3</span>
-              <p-inputNumber [(ngModel)]="x3" [disabled]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.x3" [disabled]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
           <div class="col px-1">
             <div class="p-inputgroup">
               <span class="p-inputgroup-addon">y3</span>
-              <p-inputNumber [(ngModel)]="y3" [disabled]="true" mode="decimal"></p-inputNumber>
+              <p-inputNumber [(ngModel)]="add.y3" [disabled]="true" mode="decimal"></p-inputNumber>
             </div>
           </div>
         </ng-template>
@@ -113,7 +115,8 @@
 
       <div class="d-flex flex-row justify-content-end">
           <p-button label="Reset" icon="pi pi-times" styleClass="p-button-secondary" (click)="reset()"></p-button>
-          <p-button label="Copy link" icon="pi pi-copy" styleClass="p-button-secondary" class="px-1" (click)="reset()"></p-button>
+          <p-button label="Copy link" icon="pi pi-copy" styleClass="p-button-secondary" class="px-1"
+                    (click)="utilsService.copyLink()"></p-button>
       </div>
 
     </div>

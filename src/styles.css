@@ -14,6 +14,10 @@ path > .y {
   stroke: #491EC4 !important;
 }
 
+.function-plot .graph path {
+  stroke-width: 1;
+}
+
 .function-plot .y.origin {
   stroke: #491EC4;
   stroke-width: 1;
@@ -92,8 +96,4 @@ body {
 
 .p-message {
   margin: 0.2rem 0;
-}
-
-.p-toast .p-toast-message.p-toast-message-error .p-toast-message-icon, .p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
-  align-self: center;
 }
