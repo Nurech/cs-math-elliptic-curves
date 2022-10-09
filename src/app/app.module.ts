@@ -19,10 +19,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AppRoutingModule } from './app-routing.module';
+import { AdditionComponent } from './addition/addition.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AdditionComponent
   ],
   imports: [
     BrowserModule,

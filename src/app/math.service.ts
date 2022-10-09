@@ -100,7 +100,7 @@ export class MathService {
    * This is for UX mostly but makes sense to do it...
    */
   @Log()
-  reCalcPQy(a: number, b: number, x: number,) {
+  reCalcPQy(a: number, b: number, x: number) {
     return this.fnY(a, b, x);
   }
 
@@ -110,54 +110,115 @@ export class MathService {
    * So we don't allow that to happen
    */
   @Log()
-  reCalcPQx(a: number, b: number, x1: any, x2: any, y1: any , y2: any) {
-    let xMin = this.xMin(a, b);
+  reCalcPQx(a: number, b: number, x1: any, x2: any, y1: any, y2: any) {
+    //TODO solve Infinty somewhere (when y1 === y2)
+    let xMin = this.fnX0(a, b);
     if (x1 !== null && xMin - x1 >= 0) {
       console.error('Px too small it cant go out of bounds ', xMin - x1);
-      this.showError('Px too small!');
-      return xMin;
+      this.showError('Px too small! rounding to root...');
+      return this.fnX(a, b, y1, x1);
     }
 
     if (x2 !== null && xMin - x2 >= 0) {
       console.error('Qx too small it cant go out of bounds ', xMin - x2);
-      this.showError('Qx too small!');
-      return xMin;
+      this.showError('Qx too small! rounding to root...');
+      return this.fnX(a, b, y2, x2);
     }
 
     // All good
     if (x1 !== null) {
-      // return this.fnX(a,b,x1); // TODO
-      return x1;
+      return this.fnX(a, b, y1, x1);
     } else {
-      // return this.fnX(a,b,x2); // TODO
-      return x2;
+      return this.fnX(a, b, y2, x2);
     }
   }
 
   /**
    * Calc for x cubic. We need to re-calculate x when user is moving y-cord where curve is y²=x³+ax+b
-   * Factor out x and then use the classic x * ( ax^2+bx+c / 2a )
+   * Calculate for x, quadratic equation in fnX3() and pick the right root.
+   * http://www.math.utah.edu/~wortman/1060text-tcf.pdf
+   * http://pi.math.cornell.edu/~dwh/courses/M403-S03/cubics.htm
+   * https://en.wikipedia.org/wiki/Cubic_function#Roots_of_a_cubic_function
    */
-  fnX(a: number, b: number, x: number) {
-    return Math.pow(x, 3)+a*x+b / this.fnY(a,b,x);
+  fnX(a: number, b: number, y: number, prevX: number) {
+    let roots = this.fnX3(a, b - y * y);
+    let distances = roots.map((x) => {
+      return Math.abs(x - prevX);
+    });
+    let closest = Math.min.apply(null, distances);
+
+    let newX = roots[distances.indexOf(closest)];
+    let minX = this.fnX0(a, b);
+    if (minX - newX >= 0) { // don't let x go out of bounds
+      newX = minX;
+    }
+    return newX;
+  }
+
+
+  /**
+   * We find x locations on curve. As y changes x could be in 3 or 1 places (either it's cubic or not)
+   * So when y changes x could go +/- either root would be equally valid.
+   * So we jump x to the nearest valid root relative to last location.
+   * We solve x^3 + ax + b = 0
+   * So this is much like fnX0() finds lowest - why have both?
+   * Because fnX3() finds roots for the point with y, fnX0() just finds the absolute location of the curve on x=0;
+   * x... is a complicated a.k.a. complex number.
+   */
+  fnX3(a: number, b: number) {
+    let t;
+    let s;
+    let roots = []; // store results
+    a = a / 3;
+    b = -b / 2;
+    let dComplex = Math.pow(a, 3) + Math.pow(b, 2);
+
+
+    if (dComplex < 0) { // it's on 3 places
+      s = Math.acos(b / Math.sqrt(-a * a * a));
+      t = 2 * Math.sqrt(-a);
+      roots = [
+        t * Math.cos(s / 3),
+        t * Math.cos((s + 2 * Math.PI) / 3),
+        t * Math.cos((s + 4 * Math.PI) / 3)
+      ];
+    } else if (dComplex > 0) { // it's on one place
+      s = Math.cbrt(b + Math.sqrt(dComplex));
+      t = Math.cbrt(b - Math.sqrt(dComplex));
+      roots = [s + t];
+    } else { // should not happen by a long shot...
+      roots = [
+        2 * Math.cbrt(b),
+        Math.cbrt(-b)
+      ];
+      this.showError('x has two roots!?');
+    }
+    return roots;
   }
 
   /**
    * Curve left side x min - this is the point we can't let Q or P over, or it will go outside of domain;
    * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh simplified by hand
    *
-   * JavaScript can't handle more than 16 decimal places, so I round to 15 with .toFixed(15)
+   * JavaScript can't handle more than 16 decimal places, so I round to 15 decimal places //TODO make sure round is down
    * Using more e.g. 1.1102230246251565E-16 will throw errors
    * https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
    *
+   * Also worth noting, that due this small rounding, eventually will throw cords offset,
+   * but worry not, as are program basically self corrects so that cords still match up.
+   *
    */
   @Log()
-  xMin(a: number, b: number) {
+  fnX0(a: number, b: number) {
     let s = Math.sqrt(12 * a * a * a + 81 * b * b);
     let s2 = s - 9 * b;
     let xMin = Math.cbrt(s2 / 18) - Math.cbrt(2 / 3 / s2) * a;
-    xMin = parseFloat((xMin).toFixed(15));
+    xMin = this.round(xMin, 15);
     return xMin;
+  }
+
+  round(value: number, decimals: number) {
+    return Number(Math.round(Number(value + 'e' + decimals)) + 'e-' + decimals);
   }
 
   showError(message: string) {
