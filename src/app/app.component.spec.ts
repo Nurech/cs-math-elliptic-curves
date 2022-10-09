@@ -19,7 +19,7 @@ describe('AppComponent', () => {
   it(`should have as title 'cs-math-elliptic-curves'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('cs-math-elliptic-curves');
+    expect(app.a).toEqual(-7);
   });
 
   it('should render title', () => {

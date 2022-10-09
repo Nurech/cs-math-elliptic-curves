@@ -18,6 +18,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { ToastModule } from 'primeng/toast';
     MessagesModule,
     AccordionModule,
     BrowserAnimationsModule,
-    ToastModule
+    ToastModule,
+    AppRoutingModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

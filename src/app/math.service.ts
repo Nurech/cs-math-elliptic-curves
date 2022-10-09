@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { Log } from './decorators/logger';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,8 @@ export class MathService {
    *
    * Each element on a graph is a function (solving for y or cords etc.).
    * Graph functions (lines, curves, points) ask computation from match service.
-   * Calculation is interchangeable, meaning change to P->Q will do R as R will for P->Q
+   * Calculation is relative, meaning change to P->Q will reflect on R.
+   * Some edge cases are covered (stopping user going out of bounds for x, when Q=P etc.)
    *
    * Notes:
    *
@@ -38,6 +40,7 @@ export class MathService {
    * Accuracy on chart is around ~ > .0001
    * Computational and performance wise lower decimal points may be rounded for plotting which introduces errors.
    * Hence, you may notice line thickening on graph that happens due to inaccuracy.
+   * Meaning R on the plotter is on Curve with 99.9999% accuracy (or better).
    * https://user-images.githubusercontent.com/20840114/194465045-e543f696-dc45-4aed-baea-cf2a5ad050b6.png
    *
    * Plotter - https://mauriciopoppe.github.io/function-plot/
@@ -52,15 +55,14 @@ export class MathService {
    * Find the slope m (y1 - y2) / (x1 - x2)
    * Simplify to slope-intercept y = mx + b
    */
+  @Log()
   fnPQ(x1: number, y1: number, x2: number, y2: number, a: number) {
     let m = (y2 - y1) / (x2 - x1);
     if (x1 === x2 && y1 === y2) {
       m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
     }
     let b = y1 - (m * x1);
-    let fnPQ = m + '*x + ' + b;
-    console.log('fnPQ: ', fnPQ);
-    return fnPQ;
+    return m + '*x+' + b;
   }
 
   /**
@@ -68,6 +70,7 @@ export class MathService {
    * Find R from P -> Q on the curve, addition law
    * P=(x1,y1), Q=(x1,y2), R=(x3,y3)
    */
+  @Log()
   fnPQi(x1: number, y1: number, x2: number, y2: number, a: number): number[] {
     if (x1 === x2 && y1 === y2) {
       return this.fnR0(x1, y1, x2, a);
@@ -75,9 +78,7 @@ export class MathService {
       let m = (y2 - y1) / (x2 - x1);
       let x3 = m * m - x1 - x2;
       let y3 = y1 + m * (x3 - x1);
-      let fnPQi = [x3, y3];
-      console.log('fnPQi: ', fnPQi);
-      return fnPQi;
+      return [x3, y3];
     }
   }
 
@@ -85,11 +86,10 @@ export class MathService {
    * Find R. R = y3' is the invert of y3 from fnPQi.
    * So we just * -1 the y3.
    */
+  @Log()
   fnR(x1: number, y1: number, x2: number, y2: number, a: number) {
     let fnPQi = this.fnPQi(x1, y1, x2, y2, a);
-    let fnR = [fnPQi[0], fnPQi[1] * -1];
-    console.log('fnR: ', fnR);
-    return fnR;
+    return [fnPQi[0], fnPQi[1] * -1];
   }
 
   /**
@@ -97,11 +97,10 @@ export class MathService {
    * For drawing the vector (line) from PQi -> R. PQi is basically R-
    * Because plotter is using offset to draw vector we leave x = 0, and do * -2 for the y.
    */
+  @Log()
   fnRv(x1: number, y1: number, x2: number, y2: number, a: number) {
     let fnPQi = this.fnPQi(x1, y1, x2, y2, a);
-    let fnRv = [0, fnPQi[1] * -2];
-    console.log('fnRv: ', fnRv);
-    return fnRv;
+    return [0, fnPQi[1] * -2];
   }
 
   /**
@@ -109,13 +108,12 @@ export class MathService {
    * Equation for R will be same, but we need to find slope m differently
    * R = 3 * x1² + a / 2 * y1
    */
+  @Log()
   fnR0(x1: number, y1: number, x2: number, a: number) {
     let m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
     let x3 = m * m - x1 - x2;
     let y3 = y1 + m * (x3 - x1);
-    let fnR0 = [x3, y3];
-    console.log('fnR0: ', fnR0);
-    return fnR0;
+    return [x3, y3];
   }
 
   /**
@@ -124,8 +122,8 @@ export class MathService {
    * functionPlot has trouble using implicit functions, so we simplify
    * For graph we just input the function, for fnY we calculate y
    */
+  @Log()
   fnCurve(a: number, b: number): any {
-    console.log('fnCurve is asked by plotter');
     return 'sqrt(x^3+' + a + 'x+' + b + ')';
   }
 
@@ -133,21 +131,17 @@ export class MathService {
    * Solve curve for fnY we calculate y directly (same as above fnCurve) but we input x for y
    * Conundrum here is a situation where N^0 should always be 1 but 0^N should always be 0 for N > 0
    */
+  @Log()
   fnY(a: number, b: number, x: number): any {
-    console.error(a,b,x)
-    if (x && a && b) {
-      let fnY = Math.sqrt(Math.pow(x, 3) + a * x + b);
-      console.error('fnY: ', fnY);
-      return fnY;
-    }
+    return Math.sqrt(Math.pow(x, 3) + a * x + b);
   }
 
   /**
    * On increment to P(x,y) or Q(x,y) we re-calculate cords so that points always stay on curve
    * This is for UX mostly but makes sense to do it...
    */
+  @Log()
   reCalcPQy(a: number, b: number, x: number) {
-    console.log('recalculating P,Q with reCalcPQy');
     return this.fnY(a, b, x);
   }
 
@@ -156,15 +150,16 @@ export class MathService {
    * e.g. when user is trying to move P or Q out of bounds (this will result in NaN or infinity)
    * So we don't allow that to happen
    */
+  @Log()
   reCalcPQx(a: number, b: number, x1: any, x2: any) {
     let xMin = this.xMin(a, b);
-    if (x1 !== null && xMin - x1 > 0) {
+    if (x1 !== null && xMin - x1 >= 0) {
       console.error('Px to small it cant go out of bounds ', xMin - x1);
       this.showError('Px to small it cant go out of bounds');
       return xMin;
     }
 
-    if (x2 !== null && xMin - x2 > 0) {
+    if (x2 !== null && xMin - x2 >= 0) {
       console.error('Qx to small it cant go out of bounds ', xMin - x2);
       this.showError('Qx to small it cant go out of bounds');
       return xMin;
@@ -179,18 +174,24 @@ export class MathService {
   }
 
   /**
-   * Curve left side x min (this is the point we can't let Q or P over, or it will go outside of domain
-   * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh
+   * Curve left side x min - this is the point we can't let Q or P over, or it will go outside of domain;
+   * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh simplified by hand
+   *
+   * JavaScript can't handle more than 16 decimal places, so I round to 15 with .toFixed(15)
+   * Using more e.g. 1.1102230246251565E-16 will throw errors
+   * https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
+   *
    */
+  @Log()
   xMin(a: number, b: number) {
     let s = Math.sqrt(12 * a * a * a + 81 * b * b);
     let s2 = s - 9 * b;
     let xMin = Math.cbrt(s2 / 18) - Math.cbrt(2 / 3 / s2) * a;
-    console.log('xMin is: ', xMin);
+    xMin = parseFloat((xMin).toFixed(15));
     return xMin;
   }
 
   showError(message: string) {
-    this.messageService.add({severity: 'error', summary: 'Error', detail: message + ' What are you doing!?', sticky: false, life: 2000});
+    this.messageService.add({severity: 'error', summary: 'Error', detail: message + ' What are you doing?', sticky: false, life: 4000});
   }
 }
