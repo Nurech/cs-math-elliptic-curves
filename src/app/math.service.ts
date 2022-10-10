@@ -201,7 +201,7 @@ export class MathService {
    * Curve left side x min - this is the point we can't let Q or P over, or it will go outside of domain;
    * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh simplified by hand
    *
-   * JavaScript can't handle more than 16 decimal places, so I round to 15 decimal places //TODO make sure round is down
+   * JavaScript can't handle more than 16 decimal places, so I round to 15 decimal places
    * Using more e.g. 1.1102230246251565E-16 will throw errors
    * https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
    *
@@ -214,7 +214,7 @@ export class MathService {
     let s = Math.sqrt(12 * a * a * a + 81 * b * b);
     let s2 = s - 9 * b;
     let xMin = Math.cbrt(s2 / 18) - Math.cbrt(2 / 3 / s2) * a;
-    xMin = this.round(xMin, 15);
+    xMin = this.round(xMin, 15); //TODO make sure round is down
     return xMin;
   }
 

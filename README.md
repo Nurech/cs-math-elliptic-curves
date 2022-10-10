@@ -58,7 +58,6 @@ Cool implementation of custom method logger using decorator @Log()
 * Source - http://www.math.utah.edu/~wortman/1060text-tcf.pdf
 * Source - https://medium.com/understanding-ecc/understanding-the-ellyptic-curve-cryptography-d91c11e4e331
 * Source - https://bearworks.missouristate.edu/cgi/viewcontent.cgi?article=4697&context=theses
-* Source - https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/
 * Funny - https://eprint.iacr.org/2013/635.pdf
 
 
