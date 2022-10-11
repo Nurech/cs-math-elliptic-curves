@@ -22,8 +22,6 @@ export class AdditionComponent implements OnInit, OnDestroy, AfterViewInit {
               public utilsService: UtilsService) {
   }
 
-
-
   add: any = {a: -7, b: 10, N: 34, x1: 1, y1: 2, x2: 3, y2: 4, x3: -3, y3: 2}; // defaults
   xMin = this.math.fnX0(this.add.a, this.add.b);
   content = `$y^{2}=x^{3}+${this.add.a}x+${this.add.b}$`;
