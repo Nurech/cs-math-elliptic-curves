@@ -65,18 +65,11 @@ Cool implementation of custom method logger using decorator @Log()
 
 ### press F12 to inspect logging
 ```javascript
-Logged inputs fnCurve: a:-7,b:10 Logged outputs fnCurve: sqrt(x^3+-7x+10)
-logger.ts:38 Logged inputs fnCurve: a:-7,b:10 Logged outputs fnCurve: sqrt(x^3+-7x+10)
-logger.ts:38 Logged inputs fnPQ: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQ: 1*x+1
-logger.ts:38 Logged inputs fnPQi: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQi: (2) [-3, -2]
-logger.ts:38 Logged inputs fnR: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnR: (2) [-3, 2]
-logger.ts:38 Logged inputs fnPQi: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQi: (2) [-3, -2]
-logger.ts:38 Logged inputs fnRv: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnRv: (2) [0, 4]
-logger.ts:38 Logged inputs fnPQi: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQi: (2) [-3, -2]
-logger.ts:38 Logged inputs fnPQi: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQi: (2) [-3, -2]
-logger.ts:38 Logged inputs fnR: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnR: (2) [-3, 2]
-logger.ts:38 Logged inputs fnPQi: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnPQi: (2) [-3, -2]
-logger.ts:38 Logged inputs fnR: x1:1,y1:2, x2:3, y2:4, a:-7 Logged outputs fnR: (2) [-3, 2]
+[07:18:07.251] fnY -> IN:  {a: 0, b: 10, x: 4}  OUT:  8.602325267042627
+[07:18:07.252] reCalcPQy -> IN:  {a: 0, b: 10, x: 4}  OUT:  8.602325267042627
+[07:18:07.252] reCalcPQx -> IN:  {a: 0, b: 10, x1: 4, x2: null, y1: 8.602325267042627, …}  OUT:  4
+[07:18:07.252] fnCurve -> IN:  {a: 0, b: 10}  OUT:  sqrt(x^3+0x+10)
+[07:18:07.252] fnCurve -> IN:  {a: 0, b: 10}  OUT:  sqrt(x^3+0x+10)
 ...
 ```
 
