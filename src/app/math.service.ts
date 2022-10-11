@@ -111,7 +111,7 @@ export class MathService {
    */
   @Log()
   reCalcPQx(a: number, b: number, x1: any, x2: any, y1: any, y2: any) {
-    //TODO solve Infinty somewhere (when y1 === y2)
+    //TODO solve Infinity somewhere (when y1 === y2)
     let xMin = this.fnX0(a, b);
     if (x1 !== null && xMin - x1 >= 0) {
       console.warn('Px too small it cant go out of bounds ', xMin - x1);

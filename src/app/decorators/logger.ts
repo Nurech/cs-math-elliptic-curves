@@ -37,20 +37,20 @@ export function Log(params?: LoggerParams): (target: any, propertyKey: string, d
 
     // Overwrite console logging in production with printInProd = true
     // https://angular.io/api/core/isDevMode
-    if (!options.printInProd && (!isDevMode() || environment.production)) {
+    if (!options.printInProd && !isDevMode()) {
       return;
     }
 
     // Original method
     const original = descriptor.value;
 
-    // Know that this is not the original variable name.
+    // Know that this is not the original variable name
     // ParamNames are as they appear when passed to the method
     let paramNames = descriptor.value.toString().replace(/\s/g, '').match(/\((.*?)\)/)[1].split(',');
 
     descriptor.value = function (...args: any[]) {
 
-      // Param names as they were passed into the method
+      // Inputvalues
       let paramValues: any[] = args.map(v => v);
 
       // Make the object to be printed
@@ -71,12 +71,12 @@ export function Log(params?: LoggerParams): (target: any, propertyKey: string, d
 
       // Only Inputs
       if (params?.inputs && !params?.outputs) {
-        console[options.type](original.name + ' -> IN: ' + original.name + ':', [nameAndValue]);
+        console[options.type](timeStamp, original.name + ' -> IN: ', nameAndValue);
       }
 
       // Only Outputs
       else if (!params?.inputs && params?.outputs) {
-        console[options.type](original.name + ' -> OUT: ', result);
+        console[options.type](timeStamp, original.name + ' -> OUT: ', result);
       }
 
       // Input and Output
