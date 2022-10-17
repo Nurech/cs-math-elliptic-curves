@@ -63,9 +63,9 @@ Cool implementation of custom method logger using decorator @Log()
 
 ### press F12 to inspect logging
 ```javascript
-[06:59:40.037] fnRecalculatePQ -> IN:  {change: Array(2), prev: Array(2), curvePoints: Array(120)}  OUT:  (2) [36, 32]
-[06:59:40.037] invert -> IN:  {n: -36, k: 102}  OUT:  NaN
-[06:59:40.037] fnAddPoint -> IN:  {p: Array(2), q: Array(2), k: 102, a: 10}  OUT:  (2) [NaN, NaN]
+[07:06:17.885] fnRecalculatePQ -> IN:  {change: Array(2), prev: Array(2), curvePoints: Array(103)}  OUT:  (2) [31, 35]
+[07:06:17.885] invert -> IN:  {n: -31, k: 101}  OUT:  13
+[07:06:17.886] fnAddPoint -> IN:  {p: Array(2), q: Array(2), k: 101, a: 10}  OUT:  (2) [45, 73]
 ...
 ```
 
