@@ -1,9 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@1,900&display=swap');
+
 .number-button {
   max-width: 220px;
 }
 
+.p-tabview .p-tabview-nav {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
 .function-plot .graph circle {
   r: 4;
+}
+/*R*/
+
+.function-plot .graph > circle[stroke="#22c55e"]  {
+  opacity: 1;
+  r:6;
+}
+/*Q*/
+
+.function-plot .graph > circle[stroke="#e5555e"]  {
+  stroke: #ab141e;
+  fill: #e79095;
+  opacity: 1;
+  r:6;
+}
+/*P*/
+
+.function-plot .graph > circle[stroke="#4682b3"]  {
+  opacity: 1;
+  r:6;
 }
 
 .function-plot .graph path {
@@ -30,6 +57,7 @@ path > .y {
   opacity: 1;
 }
 
+
 .sub-text {
   opacity: 0.5;
   font-size: 8px;
@@ -37,8 +65,8 @@ path > .y {
   padding: 0 28px 10px 0;
 }
 
-body {
-  background: #212529;
+.p-tabview .p-tabview-panels {
+  background: none;
 }
 
 .p-message.p-message-warn {
@@ -97,3 +125,34 @@ body {
 .p-message {
   margin: 0.2rem 0;
 }
+
+.min-input {
+  min-width: 160px;
+}
+
+
+body {
+  background: #212529;
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  width: 100vw;
+}
+
+
+h1 {
+  font-size: 4vmin;
+  line-height: 1.1;
+  margin: auto;
+  color: #22c55e;
+  text-align: center;
+}
+h2 {
+  font-size: 2vmin;
+  line-height: 1.1;
+  margin: auto;
+  color: #22c55e;
+  text-align: center;
+}
+

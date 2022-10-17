@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
+import { FieldAdditionComponent } from './field-addition/field-addition.component';
+import { ScalarComponent } from './scalar/scalar.component';
 
 const routes: Routes = [
-  { path: '', component: AppComponent }
+  { path: 'addition', component: FieldAdditionComponent },
+  { path: 'scalar', component: ScalarComponent },
+  { path: '',   redirectTo: '/addition', pathMatch: 'full' }
 ];
 
 @NgModule({

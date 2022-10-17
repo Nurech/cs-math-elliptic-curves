@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { isNaN, isPrime } from 'mathjs';
+import { UtilsService } from './utils.service';
 import { Log } from './decorators/logger';
 
 @Injectable({
@@ -7,230 +8,354 @@ import { Log } from './decorators/logger';
 })
 export class MathService {
 
-  constructor(private messageService: MessageService) {}
+  constructor(private utils: UtilsService) {}
 
   /**
-   * Straight line function for P -> Q
-   * Find the slope m (y1 - y2) / (x1 - x2)
-   * Simplify to slope-intercept y = mx + b
+   * Builds alternating 2d cords for lines representing the curve.
+   * Because we are on a finite field we can't use implicit function for curve (limitation of plotter library)
+   * Start building lines from left most edge. Cut line when reaches plotter xMax, invert
+   * and continue.
    */
   @Log()
-  fnPQ(x1: number, y1: number, x2: number, y2: number, a: number) {
-    let m = (y2 - y1) / (x2 - x1);
-    if (x1 === x2 && y1 === y2) {
-      m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
+  fnLinePoints(p: number[], q: number[], a: number, plotterDims: PlotDims, k: number) {
+    let m = (p[1] - q[1]) * this.invert(p[0] - q[0], k);
+
+    if (isNaN(m)) {
+      if (p[1] === q[1]) { // When p == q vertical line
+        m = (3 * p[0] * p[0] + a) * this.invert(2 * p[1], k);
+      } else { // This is a vertical line.
+        this.utils.showInfo('You found infinity for R! Vertical line on x: ' + p[0]);
+        return [
+          [p[0], plotterDims.yMin],
+          [p[0], plotterDims.yMax]
+        ];
+      }
     }
-    let b = y1 - (m * x1);
-    return m + '*x+' + b;
+
+    if (m === 0) { // If there is no slope, line is horizontal, though this should not happen
+      return [
+        [plotterDims.xMin, p[1]],
+        [plotterDims.xMax, p[1]]
+      ];
+    }
+
+    m = mod(m,k);
+
+    if (m < 0 && -m > m + k) { // Slope is neg and neg slope is greater than slope with prime (increase slope)
+      m += k;
+    } else if (m > 0 && -m < m - k) { // Slope is pos and neg slope is smaller than slope without prime (decrease slope)
+      m -= k;
+    }
+
+    let y;
+    let x;
+    let Q = p[1] - m * p[0];
+    let points = [];
+
+    while (Q >= k) { // y = m * x + q,  x = 0 is 0 <= y < k
+      Q -= k;
+    }
+    while (Q < 0) {
+      Q += k;
+    }
+
+    points.push([plotterDims.xMin, m * plotterDims.xMin + Q]);
+
+    do {
+      if (m > 0) { // If slope is positive line is y = m * x + q, while point is k = m * x + q
+        y = k;
+      } else { // Slope is negative for line  y = m * x + q then point is 0 = m * x + q
+        y = 0;
+      }
+      x = (y - Q) / m;
+      points.push([x, y]);
+      points.push([x, y ? 0 : k]);
+      if (m > 0) { // Slope pos
+        Q -= k;
+      } else { // Slope neg
+        Q += k;
+      }
+    } while (x < k);
+
+    points.push([plotterDims.xMax, m * plotterDims.xMax + Q]);
+
+    return points;
   }
 
   /**
-   * fnPQi is where P and Q intersect the curve
-   * Find R- from P -> Q on the curve, addition law
-   * P=(x1,y1), Q=(x1,y2), R-=(x3,y3)
+   * When parameters change we recalculate points such that they would be on the curve
+   * Otherwise points and curve is changes but Q, P are no-longer on it
    */
   @Log()
-  fnPQi(x1: number, y1: number, x2: number, y2: number, a: number): number[] {
-    if (x1 === x2 && y1 === y2) {
-      return this.fnR0(x1, y1, x2, a);
+  fnRecalculatePQ(change: number[], prev: number[], curvePoints: number[][]) {
+    if (prev === undefined) {
+      return change;
+    }
+
+    let xVal = change[0];
+    let yVal = change[1];
+    let prevX = prev[0];
+    let prevY = prev[1];
+
+    if (isNaN(xVal) || isNaN(yVal)) { // Input error
+      this.utils.showError('Please enter a valid number');
+      return [prevX, prevY];
+    }
+
+
+    let points: any[] = [];
+
+    for (const e of curvePoints) { // Check validity if point depending on case
+      let p = e;
+      if (xVal > prevX) {
+        if (p[0] > prevX) {
+          points.push(p);
+        }
+      } else if (xVal < prevX) {
+        if (p[0] < prevX) {
+          points.push(p);
+        }
+      } else if (yVal > prevY) {
+        if (p[1] > prevY) {
+          points.push(p);
+        }
+      } else if (yVal < prevY) {
+        if (p[1] < prevY) {
+          points.push(p);
+        }
+      } else { // a, b or k changed
+        points.push(p);
+      }
+    }
+
+    if (points.length === 0) {
+      if (this.fnIsPointOnCurve(prevX, prevY, curvePoints)) { // No nearby points, prev point stays
+        xVal = prevX;
+        yVal = prevY;
+        return [prevX, prevY];
+      }
+
+      points = curvePoints; // No points but the parameters might have changes
+
+      if (points.length === 0) { // Should not happen, return
+        return [prevX, prevY];
+      }
+    }
+
+    let distances = points.map((p) => {
+      const dX = xVal - p[0]; // Delta change on x
+      let dY = yVal - p[1]; // Delta change on y
+      return dX * dX + dY * dY;
+    });
+    const lowest = Math.min.apply(null, distances);
+    let p = points[distances.indexOf(lowest)];
+
+    xVal = p[0];
+    yVal = p[1];
+
+    return [p[0], p[1]];
+  }
+
+  /**
+   * Returns array of cords to represent points (P) on the curve.
+   */
+  @Log()
+  gnCurvePoints(a: number, b: number, k: number) {
+    const points = [];
+    for (let i = 0; i < k; i += 1) {
+      for (let y = 0; y < k; y += 1) {
+        if (mod((y * y - pow(i, 3) - a * i - b), k) === 0) { // Curve Fn
+          points.push([i, y]);
+        }
+      }
+    }
+    return points;
+  }
+
+
+  /**
+   * Returns boolean if given point resides on the curve.
+   */
+  @Log()
+  fnIsPointOnCurve(x: number, y: number, curvePoints: number[][]): boolean {
+    for (const e of curvePoints) {
+      let p = e;
+      if (p[0] === x && p[1] === y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  /**
+   * Adds one point to another point, returns the added result
+   * P * P = nP ...
+   * or P * Q = R
+   */
+  @Log()
+  fnAddPoint(p: number[], q: number[], k: number, a: number) {
+
+    if (p === null || p.includes(NaN)) {
+      return q;
+    }
+    if (q === null || q.includes(NaN)) {
+      return p;
+    }
+
+    let x1 = p[0];
+    let y1 = p[1];
+    let x2 = q[0];
+    let y2 = q[1];
+    let m;
+
+    if (x1 !== x2) { // Points are distinct
+      m = (y1 - y2) * this.invert(x1 - x2, k);
     } else {
-      let m = (y2 - y1) / (x2 - x1);
-      let x3 = m * m - x1 - x2;
-      let y3 = y1 + m * (x3 - x1);
-      return [x3, y3];
+      if (y1 === 0 && y2 === 0) { // But when the line is vertical, R goes to infinity
+        return [NaN, NaN];
+      } else if (y1 === y2) { // When points are same the curve does not produce infinity
+        m = (3 * x1 * x1 + a) * this.invert(2 * y1, k);
+      } else { // But when the line is vertical, R goes to infinity
+        return [NaN, NaN];
+      }
     }
-  }
+    m = mod(m, k);
+    let x3 = mod((m * m - x1 - x2), k);
+    let y3 = mod((m * (x1 - x3) - y1), k);
+    if (x3 < 0) {
+      x3 += k;
+    }
+    if (y3 < 0) {
+      y3 += k;
+    }
 
-  /**
-   * Find R. R = y3' is the invert of y3 from fnPQi.
-   * So we just * -1 the y3.
-   */
-  @Log()
-  fnR(x1: number, y1: number, x2: number, y2: number, a: number) {
-    let fnPQi = this.fnPQi(x1, y1, x2, y2, a);
-    return [fnPQi[0], fnPQi[1] * -1];
-  }
-
-  /**
-   * This is the same as above but for plotter only
-   * For drawing the vector (line) from PQi -> R. PQi is basically R-
-   * Because plotter is using offset to draw vector we leave x = 0, and do * -2 for the y.
-   */
-  @Log()
-  fnRv(x1: number, y1: number, x2: number, y2: number, a: number) {
-    let fnPQi = this.fnPQi(x1, y1, x2, y2, a);
-    return [0, fnPQi[1] * -2];
-  }
-
-  /**
-   * Special case when P = Q. One might assume infinity but noooo......
-   * Equation for R will be same, but we need to find slope m differently
-   * R = 3 * x1² + a / 2 * y1
-   */
-  @Log()
-  fnR0(x1: number, y1: number, x2: number, a: number) {
-    let m = (3 * Math.pow(x1, 2)) + a / 2 * y1;
-    let x3 = m * m - x1 - x2;
-    let y3 = y1 + m * (x3 - x1);
     return [x3, y3];
   }
 
   /**
-   * Weierstrass curve y²=x³+ax+b
-   * To get rid of pow on y² we sqrt right side
-   * functionPlot has trouble using implicit functions, so we simplify
-   * For graph we just input the function, for fnY we calculate y
+   * Inverts single cord within the bounds of k.
    */
   @Log()
-  fnCurve(a: number, b: number): any {
-    return 'sqrt(x^3+' + a + 'x+' + b + ')';
+  invert(n: number, k: number) {
+    n = mod(+n, k); // Increment n after
+    if (n < 0) {
+      n = n + k;
+    }
+    for (let m = 0; m < k; m += 1) {
+      if (mod(n * m, k) === 1) {
+        return m;
+      }
+    }
+    return NaN;
+  }
+
+
+  /**
+   * Is the order of P * P (n-times) until Pn == 0
+   * Creates a cyclic group known as the suborder.
+   */
+  @Log()
+  fnGetSubgroupOrder(k: number, a: number, p: number[]) {
+    let prime = isPrime(k);
+    if (!prime) {
+      return 0;
+    }
+    let N = 2; // prime numbers start from 2
+    let Q = this.fnAddPoint(p, p, k, a); // first Q
+    while (!Q.includes(NaN)) { // NaN == 0
+      Q = this.fnAddPoint(p, Q, k, a); // next Q
+      N += 1;
+    }
+    return N;
   }
 
   /**
-   * Solve curve for fnY we calculate y directly (same as above fnCurve) but we input x for y
-   * Conundrum here is a situation where N^0 should always be 1 but 0^N should always be 0 for N > 0
+   * Returns PQ point cords
    */
   @Log()
-  fnY(a: number, b: number, x: number): any {
-    return Math.sqrt(Math.pow(x, 3) + a * x + b);
+  getAllPoints(point: number[], k: number, a: number) {
+    let points = [[0, 0]];
+    for (let i = 0; i < k; i++) {
+      points.push(this.fnAddPoint(points[points.length - 1], point, k, a));
+    }
+    return points;
   }
 
   /**
-   * On increment to P(x,y) or Q(x,y) we re-calculate cords so that points always stay on curve
-   * This is for UX mostly but makes sense to do it...
+   * We get scalar multiplication Q = (n*P) = P+P+...
+   * Adding a point P to itself k times is called scalar multiplication
+   * or point multiplication, and is denoted as Q = kP
    */
   @Log()
-  reCalcPQy(a: number, b: number, x: number) {
-    return this.fnY(a, b, x);
-  }
+  scalarQ(n: number, p: number[], k: number, a: number): number[] {
 
-  /**
-   * At times, we need to check for special cases,
-   * e.g. when user is trying to move P or Q out of bounds (this will result in NaN or infinity)
-   * So we don't allow that to happen
-   */
-  @Log()
-  reCalcPQx(a: number, b: number, x1: any, x2: any, y1: any, y2: any) {
-    //TODO solve Infinity somewhere (when y1 === y2)
-    let xMin = this.fnX0(a, b);
-    if (x1 !== null && xMin - x1 >= 0) {
-      console.warn('Px too small it cant go out of bounds ', xMin - x1);
-      this.showWarn('Px too small! rounding to root...');
-      return this.fnX(a, b, y1, x1);
+    if (n === 0 || p === null) {
+      this.utils.showInfo('R is at Infinity');
+      return [NaN, NaN];
     }
 
-    if (x2 !== null && xMin - x2 >= 0) {
-      console.warn('Qx too small it cant go out of bounds ', xMin - x2);
-      this.showWarn('Qx too small! rounding to root...');
-      return this.fnX(a, b, y2, x2);
-    }
-
-    // All good
-    if (x1 !== null) {
-      return this.fnX(a, b, y1, x1);
+    if (n < 0) {
+      n = -n; // Negate
+      p = this.reverse(p, k);
     } else {
-      return this.fnX(a, b, y2, x2);
+      n -= 1; // Decrease by 1
     }
+
+    let q = p;
+
+    while (n) { // Till the bit n is not 0
+      if (n & 1) { // Bitwise AND with 1
+        q = this.fnAddPoint(p, q, k, a);
+      }
+
+      p = this.fnAddPoint(p, p, k, a);
+      n >>= 1; // Bitwise shift right by 1 (right most falls off)
+    }
+    if (q.includes(NaN)) {
+      this.utils.showInfo('R is at Infinity');
+    }
+
+    return q;
   }
 
   /**
-   * Calc for x cubic. We need to re-calculate x when user is moving y-cord where curve is y²=x³+ax+b
-   * Calculate for x, quadratic equation in fnX3() and pick the right root.
-   * http://www.math.utah.edu/~wortman/1060text-tcf.pdf
-   * http://pi.math.cornell.edu/~dwh/courses/M403-S03/cubics.htm
-   * https://en.wikipedia.org/wiki/Cubic_function#Roots_of_a_cubic_function
+   * Negative of Py is Py = prime - Py
    */
-  fnX(a: number, b: number, y: number, prevX: number) {
-    let roots = this.fnX3(a, b - y * y);
-    let distances = roots.map((x) => {
-      return Math.abs(x - prevX);
-    });
-    let closest = Math.min.apply(null, distances);
-
-    let newX = roots[distances.indexOf(closest)];
-    let minX = this.fnX0(a, b);
-    if (minX - newX >= 0) { // don't let x go out of bounds
-      newX = minX;
-    }
-    return newX;
+  reverse(p: number[], k: number) {
+    return [p[0], k - p[1]];
   }
 
+}
 
-  /**
-   * We find x locations on curve. As y changes x could be in 3 or 1 places (either it's cubic or not)
-   * So when y changes x could go +/- either root would be equally valid.
-   * So we jump x to the nearest valid root relative to last location.
-   * We solve x^3 + ax + b = 0
-   * So this is much like fnX0() finds lowest - why have both?
-   * Because fnX3() finds roots for the point with y, fnX0() just finds the absolute location of the curve on x=0;
-   * x... is a complicated a.k.a. complex number.
-   */
-  fnX3(a: number, b: number) {
-    let t;
-    let s;
-    let roots = []; // store results
-    a = a / 3;
-    b = -b / 2;
-    let dComplex = Math.pow(a, 3) + Math.pow(b, 2);
+/**
+ * Applies mod (b) to a
+ */
+export function mod(a: number, b: number): number {
+  const result = a % b;
+  return result >= 0 ? result : b + result;
+}
 
 
-    if (dComplex < 0) { // it's on 3 places
-      s = Math.acos(b / Math.sqrt(-a * a * a));
-      t = 2 * Math.sqrt(-a);
-      roots = [
-        t * Math.cos(s / 3),
-        t * Math.cos((s + 2 * Math.PI) / 3),
-        t * Math.cos((s + 4 * Math.PI) / 3)
-      ];
-    } else if (dComplex > 0) { // it's on one place
-      s = Math.cbrt(b + Math.sqrt(dComplex));
-      t = Math.cbrt(b - Math.sqrt(dComplex));
-      roots = [s + t];
-    } else { // should not happen by a long shot...
-      roots = [
-        2 * Math.cbrt(b),
-        Math.cbrt(-b)
-      ];
-      console.error('x has two roots!?',roots)
-      this.showError('x has two roots!?');
-    }
-    return roots;
-  }
+/**
+ * Applies pow (b) to a
+ */
+export function pow(a: number, b: number): number {
+  return Math.pow(a, b);
+}
 
-  /**
-   * Curve left side x min - this is the point we can't let Q or P over, or it will go outside of domain;
-   * Solution from WolframAlpha https://tinyurl.com/3mt5wvzh simplified by hand
-   *
-   * JavaScript can't handle more than 16 decimal places, so I round to 15 decimal places
-   * Using more e.g. 1.1102230246251565E-16 will throw errors
-   * https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
-   *
-   * Also worth noting, that due this small rounding, eventually will throw cords offset,
-   * but worry not, as are program basically self corrects so that cords still match up.
-   *
-   */
-  @Log()
-  fnX0(a: number, b: number) {
-    let s = Math.sqrt(12 * a * a * a + 81 * b * b);
-    let s2 = s - 9 * b;
-    let xMin = Math.cbrt(s2 / 18) - Math.cbrt(2 / 3 / s2) * a;
-    xMin = this.round(xMin, 15); //TODO make sure round is down
-    return xMin;
-  }
+/**
+ * Rounds value to decimal places. Javascript limitation is 16 decimals
+ * Most useful when dealing with reals not used with finite field, we deal with full integers
+ */
+export function round(value: number, decimals: number) {
+  return Number(Math.round(Number(value + 'e' + decimals)) + 'e-' + decimals);
+}
 
-  round(value: number, decimals: number) {
-    return Number(Math.round(Number(value + 'e' + decimals)) + 'e-' + decimals);
-  }
 
-  showError(message: string) {
-    this.messageService.add({severity: 'error', summary: 'Error', detail: message, sticky: false, life: 4000});
-  }
-
-  showInfo(message: string) {
-    this.messageService.add({severity: 'info', summary: 'Info', detail: message, sticky: false, life: 4000});
-  }
-
-  showWarn(message: string) {
-    this.messageService.add({severity: 'warn', summary: 'Warning', detail: message, sticky: false, life: 4000});
-  }
+export interface PlotDims {
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
 }

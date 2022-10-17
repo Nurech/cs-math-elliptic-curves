@@ -19,34 +19,38 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AppRoutingModule } from './app-routing.module';
-import { AdditionComponent } from './addition/addition.component';
+import { FieldAdditionComponent } from './field-addition/field-addition.component';
+import { TabViewModule } from 'primeng/tabview';
+import { ScalarComponent } from './scalar/scalar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdditionComponent
+    FieldAdditionComponent,
+    ScalarComponent
   ],
-  imports: [
-    BrowserModule,
-    StoreModule.forRoot({}, {}),
-    NgxEchartsModule.forRoot({
-      echarts: () => import('echarts')
-    }),
-    InputNumberModule,
-    FormsModule,
-    NgbModule,
-    ButtonModule,
-    RippleModule,
-    InputTextModule,
-    MathjaxModule.forRoot(),
-    CardModule,
-    MessageModule,
-    MessagesModule,
-    AccordionModule,
-    BrowserAnimationsModule,
-    ToastModule,
-    AppRoutingModule
-  ],
+    imports: [
+        BrowserModule,
+        StoreModule.forRoot({}, {}),
+        NgxEchartsModule.forRoot({
+            echarts: () => import('echarts')
+        }),
+        InputNumberModule,
+        FormsModule,
+        NgbModule,
+        ButtonModule,
+        RippleModule,
+        InputTextModule,
+        MathjaxModule.forRoot(),
+        CardModule,
+        MessageModule,
+        MessagesModule,
+        AccordionModule,
+        BrowserAnimationsModule,
+        ToastModule,
+        AppRoutingModule,
+        TabViewModule
+    ],
   providers: [MessageService],
   bootstrap: [AppComponent]
 })

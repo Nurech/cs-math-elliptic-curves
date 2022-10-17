@@ -37,4 +37,18 @@ export class UtilsService {
   showSuccess(message: string) {
     this.messageService.add({severity: 'success', summary: 'Success', detail: message, sticky: false, life: 4000});
   }
+
+  showError(message: string) {
+    this.messageService.add({severity: 'error', summary: 'Error', detail: message, sticky: false, life: 4000});
+  }
+
+  showInfo(message: string) {
+    this.messageService.add({severity: 'info', summary: 'Info', detail: message, sticky: false, life: 4000});
+  }
+
+  showWarn(message: string) {
+    this.messageService.add({severity: 'warn', summary: 'Warning', detail: message, sticky: false, life: 4000});
+  }
+
+
 }

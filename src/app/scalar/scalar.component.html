@@ -1,0 +1,127 @@
+<p-card class="p-card-shadow p-3">
+
+  <div class="row">
+    <h5 class="w-100 align-self-center" style="text-align: center">Scalar multiplication operation</h5>
+  </div>
+
+  <div class="row">
+    <div class="col d-flex align-items-center justify-content-center">
+      <div class="row">
+        <div class="col d-flex justify-content-center align-items-center flex-column">
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <p-message class="px-1" severity="info" text="Points (p) on plot: {{curvePoints.length}}"></p-message>
+            <p-message class="px-1" severity="info" text="P generates subgroup: {{subGrpNumber}}"></p-message>
+            <p-message *ngIf="!prime" class="px-1" severity="warn" text="Warning! k is not prime."></p-message>
+            <p-message *ngIf="n === 0" class="px-1" severity="warn" text="Warning! n should not be 0."></p-message>
+          </div>
+          <div id="graph2"></div>
+          <div class="sub-text">accuracy on graph > .001</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="row">
+
+        <p-messages severity="warn">
+          <ng-template pTemplate>
+            <span class="custom-message">Curve</span>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+
+                <span class="p-inputgroup-addon">a</span>
+                <p-inputNumber [ngModel]="a" (onInput)="input('a', $event.value)" [showButtons]="true" mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">b</span>
+                <p-inputNumber [ngModel]="b" (onInput)="input('b', $event.value)" [showButtons]="true" mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+          </ng-template>
+        </p-messages>
+      </div>
+
+
+      <div class="row">
+        <div class="col">
+          <p-messages severity="warn">
+            <ng-template pTemplate>
+              <span class="custom-message">Fields</span>
+              <div class="col px-1 min-input">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">k</span>
+                  <p-inputNumber [ngModel]="k" (onInput)="input('k', $event.value)" [min]="2" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+              <div class="col px-1 min-input">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">n</span>
+                  <p-inputNumber [ngModel]="n" (onInput)="input('n', $event.value)" [showButtons]="true" mode="decimal"></p-inputNumber>
+                </div>
+              </div>
+            </ng-template>
+          </p-messages>
+        </div>
+
+      </div>
+
+
+      <div class="row">
+        <p-messages severity="info">
+          <ng-template pTemplate>
+            <span class="custom-message">P</span>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">x1</span>
+                <p-inputNumber [ngModel]="p[0]" (onInput)="input('p', [$event.value,p[1]])" [min]="0" [max]="k" [showButtons]="true"
+                               mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">y1</span>
+                <p-inputNumber [ngModel]="p[1]" (onInput)="input('p', [p[0], $event.value])" [min]="0" [max]="k" [showButtons]="true"
+                               mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+          </ng-template>
+        </p-messages>
+      </div>
+
+      <div class="row">
+        <p-messages severity="red">
+          <ng-template pTemplate>
+            <span class="custom-message">Q(n*P)</span>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">x2</span>
+                <p-inputNumber [ngModel]="q[0]" (onInput)="input('q', [$event.value,q[1]])" [min]="0" [max]="k" [disabled]="true"
+                               [showButtons]="true"
+                               mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+            <div class="col px-1 min-input">
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">y2</span>
+                <p-inputNumber [ngModel]="q[1]" (onInput)="input('q', [q[0], $event.value])" [min]="0" [max]="k" [disabled]="true"
+                               [showButtons]="true"
+                               mode="decimal"></p-inputNumber>
+              </div>
+            </div>
+          </ng-template>
+        </p-messages>
+      </div>
+
+      <div class="row">
+
+        <div class="d-flex flex-row justify-content-end">
+          <p-button label="Reset" icon="pi pi-times" class="px-1" styleClass="p-button-secondary" (click)="reset()"></p-button>
+          <p-button label="Copy link" icon="pi pi-copy" styleClass="p-button-secondary" (click)="utilsService.copyLink()"></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-card>
+

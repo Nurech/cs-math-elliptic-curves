@@ -1,4 +1,4 @@
-# ITC8190 Mathematics for Computer Science Personal project application
+# ITC8190 Mathematics for Computer Science Personal project
 
 Based on your application, your task is to implement elliptic curve points over a finite field class. To get maximum points for this task you need:
 1. Implement point addition operation.
@@ -12,7 +12,7 @@ https://cs-math-elliptic-curve-points.web.app
 
 ## How program works:
 
-When user loads the program 3 graphs are generated with (function plotter) which
+When user loads the program 2 graphs are generated with (function plotter) which
 have starting functions with initial values. Function parameters are configurable
 via UI which change variables that turn to math service for computation. Variables can be copied to allow sharing of settings.
 
@@ -34,7 +34,7 @@ Information level messages are just informative that something special happened 
 
 Each element on a graph is a function (solving for y or cords etc.).
 Graph functions (lines, curves, points) ask computation from match service.
-Calculation is relative, meaning change to P->Q will reflect on R.
+Calculation is relative, meaning changes to parameters (e.q. P, Q) will reflect on R.
 Some edge cases are covered (stopping user going out of bounds for x, when Q=P, selecting closest x root etc.)
 Calculations are here: 
 * https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/math.service.ts
@@ -61,15 +61,11 @@ Cool implementation of custom method logger using decorator @Log()
 * Funny - https://eprint.iacr.org/2013/635.pdf
 
 
-
-
 ### press F12 to inspect logging
 ```javascript
-[07:18:07.251] fnY -> IN:  {a: 0, b: 10, x: 4}  OUT:  8.602325267042627
-[07:18:07.252] reCalcPQy -> IN:  {a: 0, b: 10, x: 4}  OUT:  8.602325267042627
-[07:18:07.252] reCalcPQx -> IN:  {a: 0, b: 10, x1: 4, x2: null, y1: 8.602325267042627, …}  OUT:  4
-[07:18:07.252] fnCurve -> IN:  {a: 0, b: 10}  OUT:  sqrt(x^3+0x+10)
-[07:18:07.252] fnCurve -> IN:  {a: 0, b: 10}  OUT:  sqrt(x^3+0x+10)
+[06:59:40.037] fnRecalculatePQ -> IN:  {change: Array(2), prev: Array(2), curvePoints: Array(120)}  OUT:  (2) [36, 32]
+[06:59:40.037] invert -> IN:  {n: -36, k: 102}  OUT:  NaN
+[06:59:40.037] fnAddPoint -> IN:  {p: Array(2), q: Array(2), k: 102, a: 10}  OUT:  (2) [NaN, NaN]
 ...
 ```
 

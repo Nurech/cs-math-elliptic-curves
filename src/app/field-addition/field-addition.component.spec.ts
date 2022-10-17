@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdditionComponent } from './addition.component';
+import { FieldAdditionComponent } from './field-addition.component';
 
-describe('AdditionComponent', () => {
-  let component: AdditionComponent;
-  let fixture: ComponentFixture<AdditionComponent>;
+describe('FieldAdditionComponent', () => {
+  let component: FieldAdditionComponent;
+  let fixture: ComponentFixture<FieldAdditionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AdditionComponent ]
+      declarations: [ FieldAdditionComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AdditionComponent);
+    fixture = TestBed.createComponent(FieldAdditionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

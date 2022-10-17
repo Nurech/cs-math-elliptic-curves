@@ -1,5 +1,19 @@
-<p-toast></p-toast>
+<p-toast position="top-left"></p-toast>
 
 <div class="container">
-  <app-addition></app-addition>
+  <div class="row py-3">
+    <h1>ELLIPTIC CURVE POINTS</h1>
+    <h2>over a finite field class</h2>
+  </div>
+  <span class="p-buttonset d-flex align-items-center justify-content-center">
+    <button pButton pRipple label="Addition" [disabled]="show === 1" (click)="show = 1" [routerLink]="'addition'"
+            icon="pi pi-chart-line"></button>
+    <button pButton pRipple label="Multiplication" [disabled]="show === 2" (click)="show = 2" [routerLink]="'scalar'"
+            icon="pi pi-chart-bar"></button>
+</span>
+
+  <app-field-addition *ngIf="show === 1"></app-field-addition>
+  <app-scalar *ngIf="show === 2"></app-scalar>
+
 </div>
+
