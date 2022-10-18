@@ -1,10 +1,11 @@
 # ITC8190 Mathematics for Computer Science Personal project
 
 Based on your application, your task is to implement elliptic curve points over a finite field class. To get maximum points for this task you need:
-1. Implement point addition operation.
-2. Implement scalar multiplication for a given point.
-3. Function that finds order of the elliptic curve group
-4. Provide a basic documentation for the code or answer my questions about how code works in person.
+
+* Implement point addition operation.
+* Implement scalar multiplication for a given point.
+* Function that finds order of the elliptic curve group
+* Provide a basic documentation for the code or answer my questions about how code works in person.
 
 ## Live site
 
@@ -36,6 +37,7 @@ Graph functions (lines, curves, points) ask computation from match service.
 Calculation is relative, meaning changes to parameters (e.q. P, Q) will reflect on R.
 Some edge cases are covered (stopping user going out of bounds for x, when Q=P, selecting closest x root etc.)
 Calculations are here: 
+
 * https://github.com/Nurech/cs-math-elliptic-curves/blob/master/src/app/math.service.ts
 
 ## Notes:
