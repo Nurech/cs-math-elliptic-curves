@@ -20,8 +20,7 @@ Program code is designed to be slightly "dumb" - to not use overly clever
 syntax and keep code flow readable. Interesting part happens in math.service.ts,
 rest of the code is just semantics and UI stuff.
 
-UI controls should be intuitive, follow color coding for lines.
-Graph can be dragged and zoomed. Hovering over functions shows cords.
+UI controls should be intuitive, follow color coding for lines and points.
 
 Error level messages indicates errors that should not happen.
 Warning levels indicate something went wrong, but was corrected for the user.

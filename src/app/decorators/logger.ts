@@ -1,6 +1,3 @@
-import { isDevMode } from '@angular/core';
-import { environment } from '../../environments/environment';
-
 interface LoggerParams {
   type?: 'log' | 'trace' | 'warn' | 'info' | 'debug' | 'error';
   inputs?: boolean;

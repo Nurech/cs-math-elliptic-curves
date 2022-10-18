@@ -18,12 +18,12 @@ export class MathService {
    */
   @Log()
   fnLinePoints(p: number[], q: number[], a: number, plotterDims: PlotDims, k: number) {
-    let m = (p[1] - q[1]) * this.invert(p[0] - q[0], k);
+    let m = (p[1] - q[1]) * this.fnInvertCord(p[0] - q[0], k); // Slope
 
     if (isNaN(m)) {
-      if (p[1] === q[1]) { // When p == q vertical line
-        m = (3 * p[0] * p[0] + a) * this.invert(2 * p[1], k);
-      } else { // This is a vertical line.
+      if (p[1] === q[1]) { // When p is on top of q (this is not infinity actually, we still get intersection for R)
+        m = (3 * p[0] * p[0] + a) * this.fnInvertCord(2 * p[1], k);
+      } else { // This is a vertical line, py and qy on same y we get vertical line
         this.utils.showInfo('You found infinity for R! Vertical line on x: ' + p[0]);
         return [
           [p[0], plotterDims.yMin],
@@ -39,7 +39,7 @@ export class MathService {
       ];
     }
 
-    m = mod(m,k);
+    m = mod(m, k);
 
     if (m < 0 && -m > m + k) { // Slope is neg and neg slope is greater than slope with prime (increase slope)
       m += k;
@@ -49,10 +49,10 @@ export class MathService {
 
     let y;
     let x;
-    let Q = p[1] - m * p[0];
+    let Q = p[1] - m * p[0]; // Not q that was passed in, it's a new q were getting
     let points = [];
 
-    while (Q >= k) { // y = m * x + q,  x = 0 is 0 <= y < k
+    while (Q >= k) { // y = m * x + q, x = 0 is 0 <= y < k
       Q -= k;
     }
     while (Q < 0) {
@@ -68,14 +68,14 @@ export class MathService {
         y = 0;
       }
       x = (y - Q) / m;
-      points.push([x, y]);
-      points.push([x, y ? 0 : k]);
+      points.push([x, y]); // new point x
+      points.push([x, y ? 0 : k]); // new point y
       if (m > 0) { // Slope pos
         Q -= k;
       } else { // Slope neg
         Q += k;
       }
-    } while (x < k);
+    } while (x < k); // Make points until k number of points have been generated
 
     points.push([plotterDims.xMax, m * plotterDims.xMax + Q]);
 
@@ -85,42 +85,43 @@ export class MathService {
   /**
    * When parameters change we recalculate points such that they would be on the curve
    * Otherwise points and curve is changes but Q, P are no-longer on it
+   * So first we get all curve points[] again and apply delta change on all of them
+   * and then choose the closest to out point change
+   * E.g. user pressed -1 on x-axis. Closest -x is -3 away, but closest change is actually -1x, -1y to we jump on that.
    */
   @Log()
-  fnRecalculatePQ(change: number[], prev: number[], curvePoints: number[][]) {
+  fnRecalculatePQ(change: number[], prev: number[], curvePoints: number[][]) { // Either P or Q is passed in (just P for scalar)
     if (prev === undefined) {
       return change;
     }
 
-    let xVal = change[0];
-    let yVal = change[1];
-    let prevX = prev[0];
-    let prevY = prev[1];
+    let xVal = change[0]; // new user input
+    let yVal = change[1]; // new user input
+    let prevX = prev[0];  // what it was before
+    let prevY = prev[1];  // what it was before
 
     if (isNaN(xVal) || isNaN(yVal)) { // Input error
       this.utils.showError('Please enter a valid number');
       return [prevX, prevY];
     }
 
-
     let points: any[] = [];
 
-    for (const e of curvePoints) { // Check validity if point depending on case
-      let p = e;
+    for (const p of curvePoints) { // Check validity if point depending on case
       if (xVal > prevX) {
-        if (p[0] > prevX) {
+        if (p[0] > prevX) { // x
           points.push(p);
         }
       } else if (xVal < prevX) {
-        if (p[0] < prevX) {
+        if (p[0] < prevX) { // x
           points.push(p);
         }
       } else if (yVal > prevY) {
-        if (p[1] > prevY) {
+        if (p[1] > prevY) { // y
           points.push(p);
         }
       } else if (yVal < prevY) {
-        if (p[1] < prevY) {
+        if (p[1] < prevY) { // y
           points.push(p);
         }
       } else { // a, b or k changed
@@ -135,7 +136,7 @@ export class MathService {
         return [prevX, prevY];
       }
 
-      points = curvePoints; // No points but the parameters might have changes
+      points = curvePoints; // No points but the parameters might have changed
 
       if (points.length === 0) { // Should not happen, return
         return [prevX, prevY];
@@ -148,7 +149,7 @@ export class MathService {
       return dX * dX + dY * dY;
     });
     const lowest = Math.min.apply(null, distances);
-    let p = points[distances.indexOf(lowest)];
+    let p = points[distances.indexOf(lowest)]; // Assign p to lowest of possible distances
 
     xVal = p[0];
     yVal = p[1];
@@ -158,6 +159,7 @@ export class MathService {
 
   /**
    * Returns array of cords to represent points (P) on the curve.
+   * Yellow diagonal lines running over plotter
    */
   @Log()
   gnCurvePoints(a: number, b: number, k: number) {
@@ -175,11 +177,11 @@ export class MathService {
 
   /**
    * Returns boolean if given point resides on the curve.
+   * Used when data changes. If is still on curve nothing changes.
    */
   @Log()
   fnIsPointOnCurve(x: number, y: number, curvePoints: number[][]): boolean {
-    for (const e of curvePoints) {
-      let p = e;
+    for (const p of curvePoints) {
       if (p[0] === x && p[1] === y) {
         return true;
       }
@@ -203,26 +205,22 @@ export class MathService {
       return p;
     }
 
-    let x1 = p[0];
-    let y1 = p[1];
-    let x2 = q[0];
-    let y2 = q[1];
     let m;
 
-    if (x1 !== x2) { // Points are distinct
-      m = (y1 - y2) * this.invert(x1 - x2, k);
+    if (p[0] !== q[0]) { // Points are distinct
+      m = (p[1] - q[1]) * this.fnInvertCord(p[0] - q[0], k);
     } else {
-      if (y1 === 0 && y2 === 0) { // But when the line is vertical, R goes to infinity
+      if (p[1] === 0 && q[1] === 0) { // But when the line is vertical, R goes to infinity
         return [NaN, NaN];
-      } else if (y1 === y2) { // When points are same the curve does not produce infinity
-        m = (3 * x1 * x1 + a) * this.invert(2 * y1, k);
+      } else if (p[1] === q[1]) { // When points are same the curve does not produce infinity
+        m = (3 * p[0] * p[0] + a) * this.fnInvertCord(2 * p[1], k);
       } else { // But when the line is vertical, R goes to infinity
         return [NaN, NaN];
       }
     }
     m = mod(m, k);
-    let x3 = mod((m * m - x1 - x2), k);
-    let y3 = mod((m * (x1 - x3) - y1), k);
+    let x3 = mod((m * m - p[0] - q[0]), k);
+    let y3 = mod((m * (p[0] - x3) - p[1]), k);
     if (x3 < 0) {
       x3 += k;
     }
@@ -237,7 +235,7 @@ export class MathService {
    * Inverts single cord within the bounds of k.
    */
   @Log()
-  invert(n: number, k: number) {
+  fnInvertCord(n: number, k: number) {
     n = mod(+n, k); // Increment n after
     if (n < 0) {
       n = n + k;
@@ -274,7 +272,7 @@ export class MathService {
    * Returns PQ point cords
    */
   @Log()
-  getAllPoints(point: number[], k: number, a: number) {
+  fnGetAllPQPoints(point: number[], k: number, a: number) {
     let points = [[0, 0]];
     for (let i = 0; i < k; i++) {
       points.push(this.fnAddPoint(points[points.length - 1], point, k, a));
@@ -288,7 +286,7 @@ export class MathService {
    * or point multiplication, and is denoted as Q = kP
    */
   @Log()
-  scalarQ(n: number, p: number[], k: number, a: number): number[] {
+  fnGetScalarQ(n: number, p: number[], k: number, a: number): number[] {
 
     if (n === 0 || p === null) {
       this.utils.showInfo('R is at Infinity');
@@ -296,7 +294,7 @@ export class MathService {
     }
 
     if (n < 0) {
-      n = -n; // Negate
+      n = -n; // Negate to pos
       p = this.reverse(p, k);
     } else {
       n -= 1; // Decrease by 1
@@ -320,6 +318,7 @@ export class MathService {
   }
 
   /**
+   * Helper function
    * Negative of Py is Py = prime - Py
    */
   reverse(p: number[], k: number) {
@@ -329,6 +328,7 @@ export class MathService {
 }
 
 /**
+ * Helper function
  * Applies mod (b) to a
  */
 export function mod(a: number, b: number): number {
@@ -338,6 +338,7 @@ export function mod(a: number, b: number): number {
 
 
 /**
+ * Helper function
  * Applies pow (b) to a
  */
 export function pow(a: number, b: number): number {
@@ -345,6 +346,7 @@ export function pow(a: number, b: number): number {
 }
 
 /**
+ * Helper function
  * Rounds value to decimal places. Javascript limitation is 16 decimals
  * Most useful when dealing with reals not used with finite field, we deal with full integers
  */

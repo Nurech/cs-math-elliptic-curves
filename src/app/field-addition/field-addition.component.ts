@@ -63,9 +63,10 @@ export class FieldAdditionComponent implements OnDestroy, AfterViewInit, OnInit 
   // Builds plotter with options
   build() {
     this.getValues();
-    this.points = this.math.getAllPoints(this.p, this.k, this.a);
+    this.points = this.math.fnGetAllPQPoints(this.p, this.k, this.a);
     this.linePoints = this.math.fnLinePoints(this.p, this.q, this.a, this.plotDims, this.k);
-    this.recalculate();
+    this.r = this.math.fnAddPoint(this.p, this.q, this.k, this.a);
+
 
     // Sometimes Function Plotter has trouble removing some when resetting options
     document.querySelectorAll('g[class=\'graph\']').forEach(e => e.remove());
@@ -134,10 +135,6 @@ export class FieldAdditionComponent implements OnDestroy, AfterViewInit, OnInit 
     this.build();
   }
 
-
-  recalculate() {
-    this.r = this.math.fnAddPoint(this.p, this.q, this.k, this.a);
-  }
 
   /**
    * Build points (p) for plotter from data

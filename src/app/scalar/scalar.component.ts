@@ -61,21 +61,12 @@ export class ScalarComponent implements AfterViewInit, OnInit {
     setTimeout(() => this.build());
   }
 
-
-  /**
-   * Readjusted because relative dependency changes
-   */
-  recalculate() {
-    this.q = this.math.scalarQ(this.n, this.p, this.k, this.a);
-    this.subGrpNumber = this.math.fnGetSubgroupOrder(this.k, this.a, this.p);
-  }
-
-
   // Builds plotter with options
   build() {
     this.getValues();
-    this.points = this.math.getAllPoints(this.p, this.k, this.a);
-    this.recalculate();
+    this.points = this.math.fnGetAllPQPoints(this.p, this.k, this.a);
+    this.q = this.math.fnGetScalarQ(this.n, this.p, this.k, this.a);
+    this.subGrpNumber = this.math.fnGetSubgroupOrder(this.k, this.a, this.p);
 
     // Sometimes Function Plotter has trouble removing some elements when resetting options
     document.querySelectorAll('g[class=\'graph\']').forEach(e => e.remove());
