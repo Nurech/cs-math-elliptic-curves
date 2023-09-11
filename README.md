@@ -8,6 +8,7 @@ Based on your application, your task is to implement elliptic curve points over 
 * Provide a basic documentation for the code or answer my questions about how code works in person.
 
 ## Live site
+![image](https://github.com/Nurech/cs-math-elliptic-curves/assets/20840114/d3805e1e-6dd7-4b2b-ad72-baa9fd099b88)
 
 https://cs-math-elliptic-curve-points.web.app
 
